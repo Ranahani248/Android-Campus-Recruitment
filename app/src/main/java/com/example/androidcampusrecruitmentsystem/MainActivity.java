@@ -12,7 +12,7 @@ import android.widget.LinearLayout;
 
 public class MainActivity extends AppCompatActivity {
     FrameLayout container;
-    LinearLayout homelayout,maillayout;
+    LinearLayout homelayout,maillayout,recentlayout,settingslayout;
     Drawable bottom_selected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,10 +21,15 @@ public class MainActivity extends AppCompatActivity {
         container = findViewById(R.id.container);
         homelayout = findViewById(R.id.homelayout);
         maillayout = findViewById(R.id.maillayout);
+        recentlayout = findViewById(R.id.recentlayout);
+        settingslayout = findViewById(R.id.settingslayout);
+
         bottom_selected = ResourcesCompat.getDrawable(getResources(),R.drawable.bottom_selected,null);
 
         Homefragment homefragment = new Homefragment();
         MailFragment mailFragment = new MailFragment();
+        RecentFragment recentFragment = new RecentFragment();
+        SettingsFragment settingsFragment = new SettingsFragment();
         setFragment(homefragment);
 
 
@@ -34,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
                 setFragment(homefragment);
                 homelayout.setBackground(bottom_selected);
                 maillayout.setBackground(null);
+                recentlayout.setBackground(null);
+                settingslayout.setBackground(null);
 
             }
         });
@@ -43,6 +50,29 @@ public class MainActivity extends AppCompatActivity {
                 setFragment(mailFragment);
                 maillayout.setBackground(bottom_selected);
                 homelayout.setBackground(null);
+                recentlayout.setBackground(null);
+                settingslayout.setBackground(null);
+
+            }
+        });
+        recentlayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setFragment(recentFragment);
+                recentlayout.setBackground(bottom_selected);
+                homelayout.setBackground(null);
+                maillayout.setBackground(null);
+                settingslayout.setBackground(null);
+            }
+        });
+        settingslayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setFragment(settingsFragment);
+                settingslayout.setBackground(bottom_selected);
+                recentlayout.setBackground(null);
+                homelayout.setBackground(null);
+                maillayout.setBackground(null);
             }
         });
     }

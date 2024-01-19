@@ -5,7 +5,7 @@
     android:id="@+id/jobViewholder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="15dp"
+    android:layout_marginVertical="14dp"
     android:background="@drawable/jobcard_bg"
     android:layout_marginHorizontal="30dp"
     android:padding="10dp"
@@ -30,10 +30,21 @@
         android:text="Software Engineer"
         android:textColor="@color/black"
         android:textSize="19sp"
+        android:layout_marginTop="10dp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/logo"
-        app:layout_constraintTop_toTopOf="@+id/logo" />
+        app:layout_constraintTop_toTopOf="parent" />
 
+    <TextView
+        android:id="@+id/Status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="17sp"
+        android:textColor="@color/black"
+        android:text="Status:"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="@+id/job_description"
+        app:layout_constraintTop_toBottomOf="@+id/companyName" />
     <TextView
         android:id="@+id/companyName"
         android:layout_width="wrap_content"
@@ -43,4 +54,16 @@
         android:text="Apple"
         app:layout_constraintStart_toStartOf="@+id/job_description"
         app:layout_constraintTop_toBottomOf="@+id/job_description" />
+
+    <TextView
+        android:id="@+id/current_status"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pending"
+        android:textColor="@color/black"
+        android:layout_marginStart="5dp"
+        android:textSize="17sp"
+        app:layout_constraintStart_toEndOf="@+id/Status"
+        app:layout_constraintTop_toTopOf="@id/Status" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
