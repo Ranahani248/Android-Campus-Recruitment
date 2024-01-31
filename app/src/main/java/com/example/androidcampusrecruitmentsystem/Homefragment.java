@@ -1,5 +1,6 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -11,9 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 
 public class Homefragment extends Fragment {
@@ -45,8 +49,13 @@ public class Homefragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_homefragment, container, false);
+      View view= inflater.inflate(R.layout.fragment_homefragment, container, false);
+        CircleImageView homeImg = view.findViewById(R.id.imageView_home);
+      homeImg.setOnClickListener(v -> {
+          Intent intent = new Intent(getContext(), Profile_Management.class);
+          startActivity(intent);
+      });
+        return view;
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

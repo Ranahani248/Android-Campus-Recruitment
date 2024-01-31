@@ -3,62 +3,113 @@ package com.example.androidcampusrecruitmentsystem;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link RecentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.util.ArrayList;
+import java.util.List;
+
 public class RecentFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
+    TextView savemore,appliedmore;
     public RecentFragment() {
-        // Required empty public constructor
     }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment RecentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static RecentFragment newInstance(String param1, String param2) {
-        RecentFragment fragment = new RecentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_recent, container, false);
+
+        View view = inflater.inflate(R.layout.fragment_recent, container, false);
+        appliedmore = view.findViewById(R.id.applied_more);
+        savemore = view.findViewById(R.id.saved_more);
+        RecyclerView saveRecycle = view.findViewById(R.id.savedJobsRecycler);
+        RecyclerView appliedRecycle = view.findViewById(R.id.applied_recycler);
+
+        List<JobItem> savejobList = new ArrayList<>();
+        List<JobItem> appliedlist = new ArrayList<>();
+        appliedlist.add(new JobItem("Applied 1"));
+        appliedlist.add(new JobItem("Applied 2"));
+
+
+
+
+        appliedRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
+        AppliedAdapter appliedAdapter = new AppliedAdapter(appliedlist);
+        appliedRecycle.setAdapter(appliedAdapter);
+        appliedmore.setOnClickListener(v->{
+
+
+            if(appliedmore.getText()!= "See Less") {
+                appliedRecycle.setNestedScrollingEnabled(true);
+                appliedlist.add(new JobItem("Applied 1"));
+                appliedlist.add(new JobItem("Applied 2"));
+                appliedlist.add(new JobItem("Applied 1"));
+                appliedlist.add(new JobItem("Applied 2"));
+                appliedRecycle.setAdapter(appliedAdapter);
+                appliedmore.setText("See Less");
+            }
+            else {
+                saveRecycle.scrollToPosition(0);
+                saveRecycle.setNestedScrollingEnabled(false);
+                appliedlist.clear();
+                appliedlist.add(new JobItem("Applied 1"));
+                appliedlist.add(new JobItem("Applied 2"));
+                appliedRecycle.setAdapter(appliedAdapter);
+                appliedmore.setText("See more...");
+            }
+
+
+        });
+
+
+
+
+
+
+
+        savejobList.add(new JobItem("Job 1"));
+        savejobList.add(new JobItem("Job 2"));
+
+
+        saveRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
+        SavedJobsAdapter savedJobsAdapter = new SavedJobsAdapter(savejobList);
+        saveRecycle.setAdapter(savedJobsAdapter);
+        savemore.setOnClickListener(v->{
+
+
+            if(savemore.getText()!= "See Less") {
+               saveRecycle.setNestedScrollingEnabled(true);
+                savejobList.add(new JobItem("Job 1"));
+                savejobList.add(new JobItem("Job 2"));
+                savejobList.add(new JobItem("Job 1"));
+                savejobList.add(new JobItem("Job 2"));
+                saveRecycle.setAdapter(savedJobsAdapter);
+               savemore.setText("See Less");
+           }
+           else {
+               saveRecycle.scrollToPosition(0);
+               saveRecycle.setNestedScrollingEnabled(false);
+               savejobList.clear();
+                savejobList.add(new JobItem("Job 1"));
+                savejobList.add(new JobItem("Job 2"));
+                saveRecycle.setAdapter(savedJobsAdapter);
+               savemore.setText("See more...");
+           }
+
+
+        });
+
+
+        return view;
     }
 }

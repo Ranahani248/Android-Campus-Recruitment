@@ -11,18 +11,24 @@
     android:padding="12dp"
     android:elevation="15dp">
 
-    <ImageView
+    <FrameLayout
         android:id="@+id/conversation_dp"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:background="@drawable/dp_bg"
-        android:padding="9dp"
-        android:layout_marginStart="15dp"
-        android:scaleType="centerCrop"
-        android:src="@drawable/user"
+        android:background="@drawable/profile_dp_bg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/mail_dp"
+            android:layout_width="31dp"
+            android:layout_height="31dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/user" />
+
+    </FrameLayout>
 
     <TextView
         android:id="@+id/user_name"

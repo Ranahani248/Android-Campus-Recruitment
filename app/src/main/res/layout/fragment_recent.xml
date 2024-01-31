@@ -4,8 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginBottom="30dp"
-    android:background="@drawable/back_ground"
+    android:layout_marginBottom="40dp"
     tools:context=".RecentFragment">
 
     <TextView
@@ -13,7 +12,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Applied Jobs"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textStyle="bold"
         android:textSize="24sp"
         android:layout_marginTop="50dp"
@@ -25,19 +24,18 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/applied_recycler"
         android:layout_width="match_parent"
-        android:layout_height="255dp"
+        android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        tools:listitem="@layout/applied_jobs_cards"
         android:nestedScrollingEnabled="false"/>
 
     <TextView
         android:id="@+id/applied_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="10dp"
+        android:layout_marginTop="15dp"
         android:text="See more..."
         android:textColor="@color/black"
         android:textSize="18sp"
@@ -54,21 +52,23 @@
         android:layout_marginLeft="30dp"
         android:text="Saved"
         android:layout_marginTop="50dp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/applied_recycler" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/jobsRecycler"
+        android:id="@+id/savedJobsRecycler"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="wrap_content"
+        android:nestedScrollingEnabled="false"
         android:layout_marginTop="20dp"
         app:layout_constraintEnd_toEndOf="parent"
+        android:paddingBottom="20dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3"
-        android:nestedScrollingEnabled="false"
-        tools:listitem="@layout/jobs_cards"/>
+        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+
     <TextView
         android:id="@+id/saved_more"
         android:layout_width="wrap_content"
@@ -77,9 +77,8 @@
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_marginTop="10dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/jobsRecycler" />
+        app:layout_constraintTop_toBottomOf="@+id/savedJobsRecycler" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

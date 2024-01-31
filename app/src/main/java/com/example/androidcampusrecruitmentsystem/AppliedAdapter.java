@@ -1,47 +1,48 @@
 package com.example.androidcampusrecruitmentsystem;
 
-// JobAdapter.java
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 import java.util.List;
 
-public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
+public class AppliedAdapter extends RecyclerView.Adapter<AppliedAdapter.ViewHolder> {
 
-    private List<JobItem> jobList;
+List<JobItem> applieditemlist ;
 
-    public JobAdapter(List<JobItem> jobList) {
-        this.jobList = jobList;
+    public AppliedAdapter(List<JobItem> applieditemlist) {
+        this.applieditemlist = applieditemlist;
     }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.jobs_cards, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.applied_jobs_cards, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        JobItem jobItem = jobList.get(position);
-        holder.jobTitleTextView.setText(jobItem.getJobTitle());
+        JobItem jobItem = applieditemlist.get(position);
+        holder.jobtitle.setText(jobItem.getJobTitle());
     }
 
     @Override
-    public  int getItemCount() {
-        return Math.min(jobList.size(), 10);
+    public int getItemCount() {
+        return applieditemlist.size();
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView jobTitleTextView;
+        TextView jobtitle;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            jobTitleTextView = itemView.findViewById(R.id.job_description);
+            jobtitle = itemView.findViewById(R.id.job_description);
         }
     }
 }

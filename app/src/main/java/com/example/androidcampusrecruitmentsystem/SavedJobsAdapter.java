@@ -1,23 +1,21 @@
 package com.example.androidcampusrecruitmentsystem;
 
-// JobAdapter.java
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
-public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
+public class SavedJobsAdapter extends RecyclerView.Adapter<SavedJobsAdapter.ViewHolder> {
+    private List<JobItem> savedjobList;
 
-    private List<JobItem> jobList;
-
-    public JobAdapter(List<JobItem> jobList) {
-        this.jobList = jobList;
+    public SavedJobsAdapter(List<JobItem> savedjobList) {
+        this.savedjobList = savedjobList;
     }
-
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -27,15 +25,15 @@ public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        JobItem jobItem = jobList.get(position);
+        JobItem jobItem = savedjobList.get(position);
         holder.jobTitleTextView.setText(jobItem.getJobTitle());
     }
 
-    @Override
-    public  int getItemCount() {
-        return Math.min(jobList.size(), 10);
-    }
 
+    @Override
+    public int getItemCount() {
+       return Math.min(savedjobList.size(), 10);
+    }
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView jobTitleTextView;
 

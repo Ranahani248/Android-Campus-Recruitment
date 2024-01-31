@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="AppTheme" parent="Theme.MaterialComponents.Light.DarkActionBar">
+        <!-- Customize the primary color -->
+        <item name="colorPrimary">#082BA7</item>
+        <!-- Customize the color of the toolbar/action bar -->
+        <item name="colorPrimaryDark">#08299F</item>
+        <!-- Customize the color of widgets, such as buttons and switches -->
+        <item name="colorAccent">#082BA7</item>
+    </style>
+    <style name="CustomSwitch" parent="@style/Widget.AppCompat.CompoundButton.Switch">
+        <!-- Customize the thumb (the moving part of the switch) color -->
+        <item name="android:thumbTint">#082BA7</item>
+        <!-- Customize the track (the background of the switch) color -->
+        <item name="android:trackTint">#8F8E8E</item>
+    </style>
+</resources>

@@ -44,16 +44,13 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
-        maillayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setFragment(mailFragment);
-                maillayout.setBackground(bottom_selected);
-                homelayout.setBackground(null);
-                recentlayout.setBackground(null);
-                settingslayout.setBackground(null);
+        maillayout.setOnClickListener(v -> {
+            setFragment(mailFragment);
+            maillayout.setBackground(bottom_selected);
+            homelayout.setBackground(null);
+            recentlayout.setBackground(null);
+            settingslayout.setBackground(null);
 
-            }
         });
         recentlayout.setOnClickListener(new View.OnClickListener() {
             @Override
