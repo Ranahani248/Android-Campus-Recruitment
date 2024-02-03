@@ -15,6 +15,22 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public  void setName(String name) {
+        this.name = name;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setDob(String dob) {
+        this.dob = dob;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
     public String getName() {
         return name;
     }

@@ -1,24 +1,26 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -26,7 +28,8 @@ import java.util.Objects;
 public class Profile_Management extends AppCompatActivity {
 
     private ImageView backbutton;
-    private EditText nameEditText, emailEditText, dobEditText, phoneNumberEditText;
+    private EditText nameEditText,  phoneNumberEditText;
+    TextView dobEditText;
     Button updateButton;
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
@@ -36,9 +39,10 @@ public class Profile_Management extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        FirebaseApp.initializeApp(this);
         setContentView(R.layout.activity_profile_management);
 
-        // Initialize Firebase components
+        // Initialize Firebase component
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         firestore = FirebaseFirestore.getInstance();
@@ -46,7 +50,6 @@ public class Profile_Management extends AppCompatActivity {
         // Initialize UI components
         backbutton = findViewById(R.id.backbutton);
         nameEditText = findViewById(R.id.nameEditText);
-        emailEditText = findViewById(R.id.emailEditText);
         dobEditText = findViewById(R.id.dobEditText);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         updateButton = findViewById(R.id.Save_changes);
@@ -61,6 +64,9 @@ public class Profile_Management extends AppCompatActivity {
             updateUserData();
             Log.d("Profile_Management", "Save Changes button clicked");
 
+        });
+        dobEditText.setOnClickListener(v -> {
+            showDatePickerDialog();
         });
         retrieveUserData();
     }
@@ -89,8 +95,6 @@ public class Profile_Management extends AppCompatActivity {
         userRef.get().addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 displayUserData(documentSnapshot);
-            } else {
-                Toast.makeText(Profile_Management.this, "Error: User data not found", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(e -> {
             Toast.makeText(Profile_Management.this, "Error retrieving user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -100,13 +104,10 @@ public class Profile_Management extends AppCompatActivity {
     private void displayUserData(DocumentSnapshot documentSnapshot) {
         String userId = currentUser.getUid();
         String name = documentSnapshot.getString("name");
-        String email = documentSnapshot.getString("email");
         String dob = documentSnapshot.getString("dob");
         String phoneNumber = documentSnapshot.getString("phoneNumber");
-
         if (currentUser != null && userId.equals(currentUser.getUid())) {
             nameEditText.setText(name);
-            emailEditText.setText(email);
             dobEditText.setText(dob);
             phoneNumberEditText.setText(phoneNumber);
         } else {
@@ -115,7 +116,6 @@ public class Profile_Management extends AppCompatActivity {
     }
     private void updateUserData() {
         String newName = nameEditText.getText().toString();
-        String newEmail = emailEditText.getText().toString();
         String newDOB = dobEditText.getText().toString();
         String newPhoneNumber = phoneNumberEditText.getText().toString();
 
@@ -126,14 +126,16 @@ public class Profile_Management extends AppCompatActivity {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         // User is a Student
-                        updateCollection("Students", uid, newName, newEmail, newDOB, newPhoneNumber);
+                        updateCollection("Students", uid, newName , newDOB, newPhoneNumber);
                     } else {
                         // User may be a Recruiter
                         firestore.collection("Recruiters").document(uid).get()
                                 .addOnSuccessListener(recruiterDocument -> {
                                     if (recruiterDocument.exists()) {
                                         // User is a Recruiter
-                                        updateCollection("Recruiters", uid, newName, newEmail, newDOB, newPhoneNumber);
+                                        updateCollection("Recruiters", uid, newName,  newDOB, newPhoneNumber);
+                                        Intent intent = new Intent(Profile_Management.this, Profile_Management.class);
+                                        startActivity(intent);
                                     } else {
                                         Toast.makeText(Profile_Management.this, "Error: Unknown user type", Toast.LENGTH_SHORT).show();
                                     }
@@ -148,25 +150,18 @@ public class Profile_Management extends AppCompatActivity {
                 });
     }
 
-    private void updateCollection(String collectionName, String uid, String newName, String newEmail, String newDOB, String newPhoneNumber) {
+    private void updateCollection(String collectionName, String uid, String newName, String newDOB, String newPhoneNumber) {
         Map<String, Object> updatedUserData = new HashMap<>();
         updatedUserData.put("name", newName);
-        updatedUserData.put("email", newEmail);
         updatedUserData.put("dob", newDOB);
         updatedUserData.put("phoneNumber", newPhoneNumber);
+
 
         // Update data in the appropriate collection
         firestore.collection(collectionName).document(uid).update(updatedUserData)
                 .addOnSuccessListener(aVoid -> {
                     // Update email in Firebase Authentication
-                    Objects.requireNonNull(mAuth.getCurrentUser()).verifyBeforeUpdateEmail(newEmail)
-                            .addOnSuccessListener(aVoid1 -> {
-                                Toast.makeText(Profile_Management.this, "User data updated successfully", Toast.LENGTH_SHORT).show();
-                            })
-                            .addOnFailureListener(e -> {
-                                Toast.makeText(Profile_Management.this, "Error updating email: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                                Log.e("Profile_Management", "Error updating email: " + e.getMessage());
-                            });
+                    Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
                     Toast.makeText(Profile_Management.this, "Error updating user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -174,6 +169,26 @@ public class Profile_Management extends AppCompatActivity {
     }
 
 
+    public void showDatePickerDialog() {
+        final Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int month = c.get(Calendar.MONTH);
+        int day = c.get(Calendar.DAY_OF_MONTH);
+
+        DatePickerDialog datePickerDialog = new DatePickerDialog(
+                this,
+                (DatePicker view, int selectedYear, int selectedMonth, int selectedDay) -> {
+                    // Set the selected date to the EditText
+                    String selectedDate = selectedYear + "-" + (selectedMonth + 1) + "-" + selectedDay;
+                    dobEditText.setText(selectedDate);
+                },
+                year,
+                month,
+                day);
+
+        // Show the date picker dialog
+        datePickerDialog.show();
+    }
 
 }
 

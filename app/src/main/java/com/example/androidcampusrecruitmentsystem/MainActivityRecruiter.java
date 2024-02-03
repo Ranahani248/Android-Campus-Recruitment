@@ -1,5 +1,6 @@
 package com.example.androidcampusrecruitmentsystem;
 
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -9,37 +10,38 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivityRecruiter extends AppCompatActivity {
     FrameLayout container;
-    LinearLayout homelayout,maillayout,recentlayout,settingslayout;
+    LinearLayout homelayout,maillayout, applicationslayout,settingslayout;
     private FirebaseUser currentUser;
     private DocumentReference userRef;
-    static final User student = new User();
+    static final User recruiter = new User();
     private FirebaseFirestore firestore;
     Drawable bottom_selected;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        container = findViewById(R.id.container);
-        homelayout = findViewById(R.id.homelayout);
-        maillayout = findViewById(R.id.maillayout);
-        recentlayout = findViewById(R.id.recentlayout);
-        settingslayout = findViewById(R.id.settingslayout);
-
+        setContentView(R.layout.activity_main_recruiter);
+        container = findViewById(R.id.container_recruiter);
+        homelayout = findViewById(R.id.homelayout_recruiter);
+        maillayout = findViewById(R.id.maillayout_recruiter);
+        applicationslayout = findViewById(R.id.applicationslayout_recruiter);
+        settingslayout = findViewById(R.id.settingslayout_recruiter);
+        ScrollView scrollView = findViewById(R.id.scrollView);
         bottom_selected = ResourcesCompat.getDrawable(getResources(),R.drawable.bottom_selected,null);
 
-        Homefragment homefragment = new Homefragment();
+        Home_recruiter home_recruiter = new Home_recruiter();
         MailFragment mailFragment = new MailFragment();
         RecentFragment recentFragment = new RecentFragment();
         SettingsFragment settingsFragment = new SettingsFragment();
-        setFragment(homefragment);
+        setFragment(home_recruiter);
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             userRef.get().addOnSuccessListener(documentSnapshot -> {
                 if (documentSnapshot.exists()) {
                     String name = documentSnapshot.getString("name");
-                    student.setName(name);
+                    recruiter.setName(name);
                 }
             });
 
@@ -60,10 +62,10 @@ public class MainActivity extends AppCompatActivity {
         homelayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(homefragment);
+                setFragment(home_recruiter);
                 homelayout.setBackground(bottom_selected);
                 maillayout.setBackground(null);
-                recentlayout.setBackground(null);
+                applicationslayout.setBackground(null);
                 settingslayout.setBackground(null);
 
             }
@@ -72,15 +74,15 @@ public class MainActivity extends AppCompatActivity {
             setFragment(mailFragment);
             maillayout.setBackground(bottom_selected);
             homelayout.setBackground(null);
-            recentlayout.setBackground(null);
+            applicationslayout.setBackground(null);
             settingslayout.setBackground(null);
 
         });
-        recentlayout.setOnClickListener(new View.OnClickListener() {
+        applicationslayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 setFragment(recentFragment);
-                recentlayout.setBackground(bottom_selected);
+                applicationslayout.setBackground(bottom_selected);
                 homelayout.setBackground(null);
                 maillayout.setBackground(null);
                 settingslayout.setBackground(null);
@@ -91,16 +93,17 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 setFragment(settingsFragment);
                 settingslayout.setBackground(bottom_selected);
-                recentlayout.setBackground(null);
+                applicationslayout.setBackground(null);
                 homelayout.setBackground(null);
                 maillayout.setBackground(null);
             }
         });
+        scrollView.scrollTo(0,0);
     }
     public void setFragment(Fragment fragment){
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container,fragment)
+                .replace(R.id.container_recruiter,fragment)
                 .commit();
 
     }
