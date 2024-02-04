@@ -1,5 +1,9 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import static com.example.androidcampusrecruitmentsystem.MainActivityRecruiter.recruiter;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
@@ -13,11 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import com.bumptech.glide.Glide;
-import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,85 +31,89 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-public class Profile_Management extends AppCompatActivity {
-
+public class Profile_Management_recruiter extends AppCompatActivity {
     private ImageView backbutton;
-    private EditText nameEditText,  phoneNumberEditText;
+    private EditText nameEditText, phoneNumberEditText;
     TextView dobEditText;
     Button updateButton;
-     Uri selectedImageUri;
-
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
-    ImageView profilePic;
     private DocumentReference userRef;
+    private ImageView profilePic;
+    private Uri selectedImageUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        FirebaseApp.initializeApp(this);
-        setContentView(R.layout.activity_profile_management);
+        setContentView(R.layout.activity_profile_management_recruiter);
 
         // Initialize Firebase component
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
         firestore = FirebaseFirestore.getInstance();
-        profilePic = findViewById(R.id.imageView_profile);
-        // Initialize UI components
-        backbutton = findViewById(R.id.backbutton);
-        nameEditText = findViewById(R.id.nameEditText);
-        dobEditText = findViewById(R.id.dobEditText);
-        phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
-        updateButton = findViewById(R.id.Save_changes);
 
+        // Initialize UI components
+        backbutton = findViewById(R.id.backbutton_recruiter);
+        nameEditText = findViewById(R.id.nameEditText_recruiter);
+        dobEditText = findViewById(R.id.dobEditText_recruiter);
+        phoneNumberEditText = findViewById(R.id.phoneNumberEditText_recruiter);
+        updateButton = findViewById(R.id.Save_changes_recruiter);
+        profilePic = findViewById(R.id.imageView_profile_recruiter);
 
         // Back button click listener
         backbutton.setOnClickListener(v -> {
-            Intent intent = new Intent(Profile_Management.this, MainActivity.class);
+            Intent intent = new Intent(Profile_Management_recruiter.this, MainActivityRecruiter.class);
             startActivity(intent);
         });
+
         updateButton.setOnClickListener(v -> {
             updateUserData();
-            if (selectedImageUri != null) {
-                uploadProfilePicture(selectedImageUri);
-            }
             Log.d("Profile_Management", "Save Changes button clicked");
-
         });
+
         dobEditText.setOnClickListener(v -> {
             showDatePickerDialog();
         });
+
         profilePic.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
             startActivityForResult(intent, 1);
         });
+
         retrieveUserData();
-
     }
-
 
     private void retrieveUserData() {
         if (currentUser != null) {
             String userId = currentUser.getUid();
-            userRef = firestore.collection("Students").document(userId);
+            userRef = firestore.collection("Recruiters").document(userId);
 
             userRef.get().addOnSuccessListener(documentSnapshot -> {
                 if (documentSnapshot.exists()) {
                     displayUserData(documentSnapshot);
 
+                    // Load profile picture if available
                     loadProfilePicture();
                 }
             }).addOnFailureListener(e -> {
-                Toast.makeText(Profile_Management.this, "Error retrieving user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(Profile_Management_recruiter.this, "Error retrieving user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             });
         }
         Log.d("Profile_Management", "retrieveUserData() called");
     }
     private void loadProfilePicture() {
+        if(recruiter.getProfilePictureUri() != null) {
+            Glide.with(this)
+                    .load(recruiter.getProfilePictureUri())
+                    .placeholder(R.drawable.user)
+                    .error(R.drawable.user)
+                    .into(profilePic);
+        }
+        else {
         String uid = currentUser.getUid();
 
-        firestore.collection("Students").document(uid).get()
+        firestore.collection("Recruiters").document(uid).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         // Check if the 'profilePicture' field exists
@@ -125,11 +129,9 @@ public class Profile_Management extends AppCompatActivity {
                     }
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(Profile_Management.this, "Error loading profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                    Toast.makeText(Profile_Management_recruiter.this, "Error loading profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });}
     }
-
-
     private void displayUserData(DocumentSnapshot documentSnapshot) {
         String userId = currentUser.getUid();
         String name = documentSnapshot.getString("name");
@@ -140,9 +142,10 @@ public class Profile_Management extends AppCompatActivity {
             dobEditText.setText(dob);
             phoneNumberEditText.setText(phoneNumber);
         } else {
-            Toast.makeText(Profile_Management.this, "Error: Unauthorized access", Toast.LENGTH_SHORT).show();
+            Toast.makeText(Profile_Management_recruiter.this, "Error: Unauthorized access", Toast.LENGTH_SHORT).show();
         }
     }
+
     private void updateUserData() {
         String newName = nameEditText.getText().toString();
         String newDOB = dobEditText.getText().toString();
@@ -150,17 +153,8 @@ public class Profile_Management extends AppCompatActivity {
 
         String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
-        // Determine the user type
-        firestore.collection("Students").document(uid).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        // User is a Student
-                        updateCollection("Recruiters", uid, newName , newDOB, newPhoneNumber);
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(Profile_Management.this, "Error determining user type: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+        // Update collection based on user type (Recruiter)
+        updateCollection("Recruiters", uid, newName, newDOB, newPhoneNumber);
     }
 
     private void updateCollection(String collectionName, String uid, String newName, String newDOB, String newPhoneNumber) {
@@ -169,7 +163,6 @@ public class Profile_Management extends AppCompatActivity {
         updatedUserData.put("dob", newDOB);
         updatedUserData.put("phoneNumber", newPhoneNumber);
 
-
         // Update data in the appropriate collection
         firestore.collection(collectionName).document(uid).update(updatedUserData)
                 .addOnSuccessListener(aVoid -> {
@@ -177,13 +170,17 @@ public class Profile_Management extends AppCompatActivity {
                     Toast.makeText(this, "Updated Successfully", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    Toast.makeText(Profile_Management.this, "Error updating user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Profile_Management_recruiter.this, "Error updating user data: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
 
+        // Upload profile picture if selected
+        if (selectedImageUri != null) {
+            uploadProfilePicture(selectedImageUri);
+            recruiter.setProfilePictureUri(selectedImageUri);
+        }
     }
 
-
-    public void showDatePickerDialog() {
+    private void showDatePickerDialog() {
         final Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
@@ -203,6 +200,7 @@ public class Profile_Management extends AppCompatActivity {
         // Show the date picker dialog
         datePickerDialog.show();
     }
+
     private void uploadProfilePicture(Uri imageUri) {
         String uid = Objects.requireNonNull(mAuth.getCurrentUser()).getUid();
 
@@ -216,13 +214,12 @@ public class Profile_Management extends AppCompatActivity {
                     // Get the download URL and update the user's profile picture in Firestore
                     profilePictureRef.getDownloadUrl()
                             .addOnSuccessListener(uri -> {
-                                // Update the profile picture URL in Firestore
                                 updateProfilePicture(uid, uri.toString());
                             });
                 })
                 .addOnFailureListener(e -> {
                     // Handle unsuccessful uploads
-                    Toast.makeText(Profile_Management.this, "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Profile_Management_recruiter.this, "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -231,22 +228,19 @@ public class Profile_Management extends AppCompatActivity {
         Map<String, Object> updatedUserData = new HashMap<>();
         updatedUserData.put("profilePicture", imageUrl);
 
-        firestore.collection("Students").document(uid).update(updatedUserData)
-                .addOnSuccessListener(aVoid -> {
-                    // Update successful
-                    Toast.makeText(Profile_Management.this, "Profile picture updated successfully", Toast.LENGTH_SHORT).show();
-                })
+        firestore.collection("Recruiters").document(uid).update(updatedUserData)
+
                 .addOnFailureListener(e -> {
                     // Handle errors
-                    Toast.makeText(Profile_Management.this, "Error updating profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Profile_Management_recruiter.this, "Error updating profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
+
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == 1 && resultCode == RESULT_OK && data != null && data.getData() != null) {
-
             selectedImageUri = data.getData();
 
             Glide.with(this)
@@ -256,6 +250,4 @@ public class Profile_Management extends AppCompatActivity {
                     .into(profilePic);
         }
     }
-
 }
-

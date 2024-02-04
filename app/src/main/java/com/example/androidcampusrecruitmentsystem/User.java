@@ -1,10 +1,22 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import android.net.Uri;
+
 public class User {
     private String name;
     private String email;
+
+    public Uri getProfilePictureUri() {
+        return profilePictureUri;
+    }
+
+    public void setProfilePictureUri(Uri profilePictureUri) {
+        this.profilePictureUri = profilePictureUri;
+    }
+
     private String dob;
     private String phoneNumber;
+    private Uri profilePictureUri;
 
     public User() {}
 

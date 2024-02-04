@@ -80,10 +80,17 @@ public class signUp_page extends AppCompatActivity {
         String email = emailSignUp.getText().toString();
         String password = passwordSignUp.getText().toString();
         String name = nameSignUp.getText().toString();
-
-        if (email.isEmpty() || password.isEmpty() || name.isEmpty()) {
-            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
-        } else {
+        if(name.isEmpty()){
+            nameSignUp.setError("Name is required");
+            nameSignUp.requestFocus();
+        }
+       else if (email.isEmpty()) {
+            emailSignUp.setError("Email is required");
+            emailSignUp.requestFocus();
+        } else if (password.isEmpty()) {
+            passwordSignUp.setError("Password is required");
+            passwordSignUp.requestFocus();
+        }  else {
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
                     String uid = mAuth.getCurrentUser().getUid();
@@ -102,7 +109,7 @@ public class signUp_page extends AppCompatActivity {
                                 .addOnSuccessListener(documentReference -> {
                                     Toast.makeText(signUp_page.this, "Signed up as recruiter", Toast.LENGTH_SHORT).show();
                                     // Redirect to the RecruiterActivity
-                                    startActivity(new Intent(signUp_page.this, Profile_Management.class));
+                                    startActivity(new Intent(signUp_page.this, Profile_Management_recruiter.class));
                                     finish(); // Close the current activity
                                 })
                                 .addOnFailureListener(e -> {

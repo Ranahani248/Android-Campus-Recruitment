@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -84,12 +85,46 @@ public class Homefragment extends Fragment {
         else{
             userName.setText(student.getName());
        }
-
+        if(student.getProfilePictureUri() == null){
+            loadProfilePicture(homeImg);}
+        else{
+            Glide.with(this)
+                    .load(student.getProfilePictureUri())
+                    .placeholder(R.drawable.user)
+                    .error(R.drawable.user)
+                    .into(homeImg);
+        }
         homeImg.setOnClickListener(v -> {
           Intent intent = new Intent(getContext(), Profile_Management.class);
           startActivity(intent);
       });
         return view;
+    }
+    private void loadProfilePicture(ImageView homeImg) {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        if (currentUser != null && firestore != null && isAdded()) { // Check if currentUser, firestore, and fragment are not null and fragment is added
+
+            String uid = currentUser.getUid();
+
+            firestore.collection("Students").document(uid).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Check if the 'profilePicture' field exists
+                            if (documentSnapshot.contains("profilePicture")) {
+                                // Download the profile picture into the ImageView using Glide or Picasso
+                                Glide.with(this)
+                                        .load(documentSnapshot.getString("profilePicture"))
+                                        .placeholder(R.drawable.user)
+                                        .error(R.drawable.user)
+                                        .into(homeImg);
+                            }
+
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(getContext(), "Error loading profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+        }
     }
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {

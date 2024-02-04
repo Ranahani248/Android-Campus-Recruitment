@@ -5,11 +5,15 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -21,6 +25,8 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseUser currentUser;
     private DocumentReference userRef;
     static final User student = new User();
+    public static final int REQUEST_CODE = 1;
+
     private FirebaseFirestore firestore;
     Drawable bottom_selected;
     @Override
@@ -53,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
                 if (documentSnapshot.exists()) {
                     String name = documentSnapshot.getString("name");
                     student.setName(name);
+                    setImage();
                 }
             });
 
@@ -104,4 +111,25 @@ public class MainActivity extends AppCompatActivity {
                 .commit();
 
     }
+    private void setImage() {
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+            String uid = currentUser.getUid();
+
+            firestore.collection("Students").document(uid).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Check if the 'profilePicture' field exists
+                            if (documentSnapshot.contains("profilePicture")) {
+                                student.setProfilePictureUri(Uri.parse(documentSnapshot.getString("profilePicture")));
+                            }
+
+                        }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(MainActivity.this, "Error loading profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+
+    }
+
 }

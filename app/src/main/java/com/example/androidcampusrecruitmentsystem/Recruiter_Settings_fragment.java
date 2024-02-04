@@ -8,15 +8,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
 
-public class SettingsFragment extends Fragment {
 
+public class Recruiter_Settings_fragment extends Fragment {
 
-    public SettingsFragment() {
+    public Recruiter_Settings_fragment() {
         // Required empty public constructor
     }
 
@@ -24,18 +24,18 @@ public class SettingsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ;
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_settings, container, false);
-        TextView profileButton = view.findViewById(R.id.profile_settings);
-        TextView logOutButton = view.findViewById(R.id.Log_Out);
-
-
+       View view = inflater.inflate(R.layout.fragment_recruiter__settings_fragment, container, false);
+        TextView profileButton = view.findViewById(R.id.profile_settings_recruiter);
+        TextView logOutButton = view.findViewById(R.id.Log_Out_recruiter);
         profileButton.setOnClickListener(v -> {
-            Intent intent = new Intent(getContext(), Profile_Management.class);
+            Intent intent = new Intent(getContext(), Profile_Management_recruiter.class);
             startActivity(intent);
         });
         logOutButton.setOnClickListener(v -> {

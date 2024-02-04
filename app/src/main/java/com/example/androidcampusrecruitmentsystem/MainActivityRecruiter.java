@@ -6,11 +6,13 @@ import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
 
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -21,6 +23,8 @@ public class MainActivityRecruiter extends AppCompatActivity {
     FrameLayout container;
     LinearLayout homelayout,maillayout, applicationslayout,settingslayout;
     private FirebaseUser currentUser;
+    public static final int REQUEST_CODE = 2;
+
     private DocumentReference userRef;
     static final User recruiter = new User();
     private FirebaseFirestore firestore;
@@ -40,14 +44,13 @@ public class MainActivityRecruiter extends AppCompatActivity {
         Home_recruiter home_recruiter = new Home_recruiter();
         MailFragment mailFragment = new MailFragment();
         RecentFragment recentFragment = new RecentFragment();
-        SettingsFragment settingsFragment = new SettingsFragment();
+        Recruiter_Settings_fragment recruiterSettingsFragment = new Recruiter_Settings_fragment();
         setFragment(home_recruiter);
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
-        userRef = firestore.collection("Students").document(userId);
-
+        userRef = firestore.collection("Recruiters").document(userId);
 
 
         if(currentUser != null) {
@@ -55,6 +58,9 @@ public class MainActivityRecruiter extends AppCompatActivity {
                 if (documentSnapshot.exists()) {
                     String name = documentSnapshot.getString("name");
                     recruiter.setName(name);
+                    if (documentSnapshot.contains("profilePicture")) {
+                        recruiter.setProfilePictureUri(Uri.parse(documentSnapshot.getString("profilePicture")));
+                    }
                 }
             });
 
@@ -91,7 +97,7 @@ public class MainActivityRecruiter extends AppCompatActivity {
         settingslayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(settingsFragment);
+                setFragment(recruiterSettingsFragment);
                 settingslayout.setBackground(bottom_selected);
                 applicationslayout.setBackground(null);
                 homelayout.setBackground(null);
@@ -107,4 +113,6 @@ public class MainActivityRecruiter extends AppCompatActivity {
                 .commit();
 
     }
+
+
 }
