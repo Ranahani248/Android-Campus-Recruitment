@@ -2,18 +2,24 @@ package com.example.androidcampusrecruitmentsystem;
 
 import static com.example.androidcampusrecruitmentsystem.MainActivityRecruiter.recruiter;
 
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,6 +45,8 @@ public class Profile_Management_recruiter extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    ProgressBar progressBar;
+    ConstraintLayout constraintLayout;
     private DocumentReference userRef;
     private ImageView profilePic;
     private Uri selectedImageUri;
@@ -53,6 +61,10 @@ public class Profile_Management_recruiter extends AppCompatActivity {
         currentUser = mAuth.getCurrentUser();
         firestore = FirebaseFirestore.getInstance();
 
+
+        constraintLayout = findViewById(R.id.constraintLayout_profile_management_recruiter);
+        progressBar = findViewById(R.id.progressBar_recruiterProfile);
+
         // Initialize UI components
         backbutton = findViewById(R.id.backbutton_recruiter);
         nameEditText = findViewById(R.id.nameEditText_recruiter);
@@ -60,7 +72,17 @@ public class Profile_Management_recruiter extends AppCompatActivity {
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText_recruiter);
         updateButton = findViewById(R.id.Save_changes_recruiter);
         profilePic = findViewById(R.id.imageView_profile_recruiter);
+        setProgressBar();
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(this::resetProgressBar, 3000);
 
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
         // Back button click listener
         backbutton.setOnClickListener(v -> {
             Intent intent = new Intent(Profile_Management_recruiter.this, MainActivityRecruiter.class);
@@ -92,8 +114,6 @@ public class Profile_Management_recruiter extends AppCompatActivity {
             userRef.get().addOnSuccessListener(documentSnapshot -> {
                 if (documentSnapshot.exists()) {
                     displayUserData(documentSnapshot);
-
-                    // Load profile picture if available
                     loadProfilePicture();
                 }
             }).addOnFailureListener(e -> {
@@ -102,36 +122,32 @@ public class Profile_Management_recruiter extends AppCompatActivity {
         }
         Log.d("Profile_Management", "retrieveUserData() called");
     }
+
     private void loadProfilePicture() {
-        if(recruiter.getProfilePictureUri() != null) {
-            Glide.with(this)
-                    .load(recruiter.getProfilePictureUri())
-                    .placeholder(R.drawable.user)
-                    .error(R.drawable.user)
-                    .into(profilePic);
-        }
-        else {
-        String uid = currentUser.getUid();
 
-        firestore.collection("Recruiters").document(uid).get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        // Check if the 'profilePicture' field exists
-                        if (documentSnapshot.contains("profilePicture")) {
-                            // Download the profile picture into the ImageView using Glide or Picasso
-                            Glide.with(this)
-                                    .load(documentSnapshot.getString("profilePicture"))
-                                    .placeholder(R.drawable.user)
-                                    .error(R.drawable.user)
-                                    .into(profilePic);
+            String uid = currentUser.getUid();
+
+            firestore.collection("Recruiters").document(uid).get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Check if the 'profilePicture' field exists
+                            if (documentSnapshot.contains("profilePicture")) {
+                                // Download the profile picture into the ImageView using Glide or Picasso
+                                Glide.with(this)
+                                        .load(documentSnapshot.getString("profilePicture"))
+                                        .placeholder(R.drawable.user)
+                                        .error(R.drawable.user)
+                                        .into(profilePic);
+                            }
+
                         }
+                    })
+                    .addOnFailureListener(e -> {
+                        Toast.makeText(Profile_Management_recruiter.this, "Error loading profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
 
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(Profile_Management_recruiter.this, "Error loading profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });}
     }
+
     private void displayUserData(DocumentSnapshot documentSnapshot) {
         String userId = currentUser.getUid();
         String name = documentSnapshot.getString("name");
@@ -250,4 +266,28 @@ public class Profile_Management_recruiter extends AppCompatActivity {
                     .into(profilePic);
         }
     }
+
+    public void setProgressBar() {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        updateButton.setEnabled(false);
+        profilePic.setEnabled(false);
+        dobEditText.setEnabled(false);
+        nameEditText.setEnabled(false);
+        phoneNumberEditText.setEnabled(false);
+        constraintLayout.setAlpha(0.5f);
+
+    }
+
+    public void resetProgressBar() {
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
+        updateButton.setEnabled(true);
+        profilePic.setEnabled(true);
+        dobEditText.setEnabled(true);
+        nameEditText.setEnabled(true);
+        phoneNumberEditText.setEnabled(true);
+        constraintLayout.setAlpha(1f);
+    }
+
+
+
 }

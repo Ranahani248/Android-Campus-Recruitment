@@ -17,6 +17,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,10 +26,12 @@ import com.bumptech.glide.Glide;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 
@@ -39,11 +43,13 @@ public class Home_recruiter extends Fragment {
     private DocumentReference userRef;
     private FirebaseFirestore firestore;
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
 
     }
 
@@ -52,6 +58,8 @@ public class Home_recruiter extends Fragment {
                              Bundle savedInstanceState) {
         View view= inflater.inflate(R.layout.fragment_home_recruiter, container, false);
         CircleImageView homeImg_recruiter = view.findViewById(R.id.imageView_home_recruiter);
+
+
         if(recruiter.getProfilePictureUri() == null){
             loadProfilePicture(homeImg_recruiter);}
         else{
@@ -61,6 +69,7 @@ public class Home_recruiter extends Fragment {
                     .error(R.drawable.user)
                     .into(homeImg_recruiter);
         }
+
 
         Button postjob_recruiter = view.findViewById(R.id.Post_button);
         TextView userName_recruiter = view.findViewById(R.id.userName_recruiter);
@@ -122,26 +131,38 @@ public class Home_recruiter extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
-
-
-
         List<JobItem> joblist_recruiter = new ArrayList<>();
-        joblist_recruiter.add(new JobItem("Job 1"));
-        joblist_recruiter.add(new JobItem("Job 2"));
-        joblist_recruiter.add(new JobItem("Job 3"));
-        joblist_recruiter.add(new JobItem("Job 4"));
-        joblist_recruiter.add(new JobItem("Job 5"));
-        joblist_recruiter.add(new JobItem("Job 6"));
-        joblist_recruiter.add(new JobItem("Job 7"));
-        joblist_recruiter.add(new JobItem("Job 8"));
-        joblist_recruiter.add(new JobItem("Job 9"));
-        joblist_recruiter.add(new JobItem("Job 10"));
+        ProgressBar progressBar = view.findViewById(R.id.progressBar_homeRecruiter);
+        TextView noJobs = view.findViewById(R.id.None_job_recruiter);
 
-        // Set up RecyclerView
-        RecyclerView recyclerView = view.findViewById(R.id.jobRecycler_recruiter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        JobAdapter_recruiter jobAdapter_recruiter = new JobAdapter_recruiter(joblist_recruiter);
-        recyclerView.setAdapter(jobAdapter_recruiter);
-    }
+        progressBar.setVisibility(View.VISIBLE);
+        String recruiterId = currentUser.getUid();
+
+
+        firestore.collection("Jobs")
+                .whereEqualTo("recruiterId", recruiterId)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        for (DocumentSnapshot document : task.getResult()) {
+                            // Retrieve job details and add them to the list
+                            String jobTitle = document.getString("jobTitle");
+                            joblist_recruiter.add(new JobItem(jobTitle));
+                        }
+                        RecyclerView recyclerView = view.findViewById(R.id.jobRecycler_recruiter);
+                        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                        JobAdapter_recruiter jobAdapter_recruiter = new JobAdapter_recruiter(joblist_recruiter);
+                        progressBar.setVisibility(View.GONE);
+                        if (joblist_recruiter.isEmpty()) {
+                            noJobs.setVisibility(View.VISIBLE);
+                        }
+                        else {
+                            noJobs.setVisibility(View.GONE);
+                        }
+                        recyclerView.setAdapter(jobAdapter_recruiter);
+                    }
+                });
+}
+
+
 }

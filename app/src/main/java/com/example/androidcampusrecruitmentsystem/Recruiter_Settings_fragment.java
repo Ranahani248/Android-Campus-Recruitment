@@ -1,6 +1,8 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -12,6 +14,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+
+import java.util.Objects;
 
 
 public class Recruiter_Settings_fragment extends Fragment {
@@ -34,6 +38,7 @@ public class Recruiter_Settings_fragment extends Fragment {
        View view = inflater.inflate(R.layout.fragment_recruiter__settings_fragment, container, false);
         TextView profileButton = view.findViewById(R.id.profile_settings_recruiter);
         TextView logOutButton = view.findViewById(R.id.Log_Out_recruiter);
+        SharedPreferences sharedPreferences = requireContext().getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         profileButton.setOnClickListener(v -> {
             Intent intent = new Intent(getContext(), Profile_Management_recruiter.class);
             startActivity(intent);
@@ -42,6 +47,7 @@ public class Recruiter_Settings_fragment extends Fragment {
             FirebaseAuth.getInstance().signOut();
             Intent intent = new Intent(getContext(), loginPage.class);
             startActivity(intent);
+
         });
         return view;
     }

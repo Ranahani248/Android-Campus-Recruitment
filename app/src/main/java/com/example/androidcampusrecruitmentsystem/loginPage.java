@@ -3,17 +3,23 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -22,6 +28,8 @@ public class loginPage extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private EditText emailLogin, passwordLogin;
     private Button login_button, login_signup_button;
+    ProgressBar progressBar;
+    ConstraintLayout login_layout;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -33,13 +41,21 @@ public class loginPage extends AppCompatActivity {
         emailLogin = findViewById(R.id.login_mail);
         passwordLogin = findViewById(R.id.login_password);
         login_button = findViewById(R.id.login_button);
+        login_layout = findViewById(R.id.constraintLayoutLogin);
+        progressBar = findViewById(R.id.progressBarLogin);
         login_signup_button = findViewById(R.id.login_signup_button);
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
+        setProgressBar();
+//        Handler handler = new Handler(Looper.getMainLooper());
+//        handler.postDelayed(this::resetProgressBar, 3000);
+//
 
-        // Check if the user is already logged in
-        if (sharedPreferences.getBoolean("loggedIn", false)) {
-            // If logged in, directly navigate to the respective main activity
+        FirebaseUser currentUser = mAuth.getCurrentUser();
+        if (currentUser != null) {
             navigateToMainActivity();
+        }
+        else {
+            resetProgressBar();
         }
 
         login_signup_button.setOnClickListener(v -> {
@@ -63,13 +79,15 @@ public class loginPage extends AppCompatActivity {
             passwordLogin.setError("Password is required");
             passwordLogin.requestFocus();
         } else {
+            setProgressBar();
+
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        // Fetch user role from Firebase
                         checkUserRole();
                     } else {
+                        resetProgressBar();
                         Toast.makeText(loginPage.this, "Login Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
@@ -123,6 +141,7 @@ public class loginPage extends AppCompatActivity {
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
                             // User is a student
+
                             Intent intent = new Intent(loginPage.this, MainActivity.class);
                             startActivityForResult(intent, MainActivity.REQUEST_CODE);
                         } else {
@@ -135,6 +154,8 @@ public class loginPage extends AppCompatActivity {
                                             Intent intent = new Intent(loginPage.this, MainActivityRecruiter.class);
                                             startActivityForResult(intent, MainActivityRecruiter.REQUEST_CODE);
                                         } else {
+                                            resetProgressBar();
+
                                             // Handle cases where the user is not found in either collection
                                             Toast.makeText(loginPage.this, "Unknown user role", Toast.LENGTH_SHORT).show();
                                         }
@@ -152,6 +173,23 @@ public class loginPage extends AppCompatActivity {
             // Handle the result if needed
         }
     }
+ public  void  setProgressBar(){
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        login_signup_button.setEnabled(false);
+        login_button.setEnabled(false);
+        emailLogin.setEnabled(false);
+        passwordLogin.setEnabled(false);
+     login_layout.setAlpha(0.5f);
 
+ }
+ public  void  resetProgressBar(){
+     progressBar.setVisibility(ProgressBar.GONE);
+     login_signup_button.setEnabled(true);
+     login_button.setEnabled(true);
+     emailLogin.setEnabled(true);
+     passwordLogin.setEnabled(true);
+     login_layout.setAlpha(1f);
+
+ }
 
 }

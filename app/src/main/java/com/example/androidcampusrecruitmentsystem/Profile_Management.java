@@ -4,17 +4,22 @@ import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.bumptech.glide.Glide;
 import com.google.firebase.FirebaseApp;
@@ -39,9 +44,12 @@ public class Profile_Management extends AppCompatActivity {
     Button updateButton;
      Uri selectedImageUri;
 
+     ConstraintLayout constraintLayout;
+
     private FirebaseFirestore firestore;
     private FirebaseAuth mAuth;
     private FirebaseUser currentUser;
+    ProgressBar progressBar;
     ImageView profilePic;
     private DocumentReference userRef;
 
@@ -59,10 +67,24 @@ public class Profile_Management extends AppCompatActivity {
         // Initialize UI components
         backbutton = findViewById(R.id.backbutton);
         nameEditText = findViewById(R.id.nameEditText);
+        constraintLayout = findViewById(R.id.constraintLayout_profile_student);
+        progressBar = findViewById(R.id.progressBar_studentProfile);
         dobEditText = findViewById(R.id.dobEditText);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         updateButton = findViewById(R.id.Save_changes);
 
+        setProgressBar();
+        Handler handler = new Handler(Looper.getMainLooper());
+        handler.postDelayed(this::resetProgressBar, 3000);
+
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
 
         // Back button click listener
         backbutton.setOnClickListener(v -> {
@@ -256,6 +278,25 @@ public class Profile_Management extends AppCompatActivity {
                     .into(profilePic);
         }
     }
+    public void setProgressBar() {
+        progressBar.setVisibility(ProgressBar.VISIBLE);
+        updateButton.setEnabled(false);
+        profilePic.setEnabled(false);
+        dobEditText.setEnabled(false);
+        nameEditText.setEnabled(false);
+        phoneNumberEditText.setEnabled(false);
+        constraintLayout.setAlpha(0.5f);
 
+    }
+
+    public void resetProgressBar() {
+        progressBar.setVisibility(ProgressBar.INVISIBLE);
+        updateButton.setEnabled(true);
+        profilePic.setEnabled(true);
+        dobEditText.setEnabled(true);
+        nameEditText.setEnabled(true);
+        phoneNumberEditText.setEnabled(true);
+        constraintLayout.setAlpha(1f);
+    }
 }
 

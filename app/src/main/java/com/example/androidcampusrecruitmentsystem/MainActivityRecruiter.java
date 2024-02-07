@@ -1,6 +1,7 @@
 package com.example.androidcampusrecruitmentsystem;
 
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -8,6 +9,7 @@ import androidx.fragment.app.Fragment;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -39,14 +41,25 @@ public class MainActivityRecruiter extends AppCompatActivity {
         applicationslayout = findViewById(R.id.applicationslayout_recruiter);
         settingslayout = findViewById(R.id.settingslayout_recruiter);
         ScrollView scrollView = findViewById(R.id.scrollView);
+        Log.d("TAG", "onCreate: "+scrollView.getScrollY());
         bottom_selected = ResourcesCompat.getDrawable(getResources(),R.drawable.bottom_selected,null);
-
         Home_recruiter home_recruiter = new Home_recruiter();
         MailFragment mailFragment = new MailFragment();
         RecentFragment recentFragment = new RecentFragment();
         Recruiter_Settings_fragment recruiterSettingsFragment = new Recruiter_Settings_fragment();
         setFragment(home_recruiter);
+        scrollView.scrollTo(0,1);
 
+
+
+
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
@@ -65,16 +78,13 @@ public class MainActivityRecruiter extends AppCompatActivity {
             });
 
         }
-        homelayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        homelayout.setOnClickListener(v -> {
                 setFragment(home_recruiter);
                 homelayout.setBackground(bottom_selected);
                 maillayout.setBackground(null);
                 applicationslayout.setBackground(null);
                 settingslayout.setBackground(null);
 
-            }
         });
         maillayout.setOnClickListener(v -> {
             setFragment(mailFragment);
@@ -104,13 +114,14 @@ public class MainActivityRecruiter extends AppCompatActivity {
                 maillayout.setBackground(null);
             }
         });
-        scrollView.scrollTo(0,0);
     }
     public void setFragment(Fragment fragment){
         getSupportFragmentManager()
                 .beginTransaction()
-                .replace(R.id.container_recruiter,fragment)
+                .replace(R.id.container_recruiter, fragment)
                 .commit();
+        ScrollView scrollView = findViewById(R.id.scrollView);
+        scrollView.scrollTo(0,1);
 
     }
 
