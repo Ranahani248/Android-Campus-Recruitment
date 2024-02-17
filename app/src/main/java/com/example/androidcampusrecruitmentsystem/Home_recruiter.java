@@ -146,8 +146,12 @@ public class Home_recruiter extends Fragment {
                     if (task.isSuccessful()) {
                         for (DocumentSnapshot document : task.getResult()) {
                             // Retrieve job details and add them to the list
+                            String jobId = document.getId();
                             String jobTitle = document.getString("jobTitle");
-                            joblist_recruiter.add(new JobItem(jobTitle));
+                            String companyName = document.getString("companyName");
+                            String location = document.getString("location");
+                            String description = document.getString("description");
+                            joblist_recruiter.add(new JobItem(jobId,jobTitle, description, companyName, location));
                         }
                         RecyclerView recyclerView = view.findViewById(R.id.jobRecycler_recruiter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));

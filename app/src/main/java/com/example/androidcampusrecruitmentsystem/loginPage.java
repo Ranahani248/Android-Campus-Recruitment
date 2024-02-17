@@ -157,7 +157,6 @@ public class loginPage extends AppCompatActivity {
                                             resetProgressBar();
 
                                             // Handle cases where the user is not found in either collection
-                                            Toast.makeText(loginPage.this, "Unknown user role", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                         }

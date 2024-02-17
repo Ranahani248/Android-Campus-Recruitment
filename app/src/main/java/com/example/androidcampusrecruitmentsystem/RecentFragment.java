@@ -37,8 +37,6 @@ public class RecentFragment extends Fragment {
 
         List<JobItem> savejobList = new ArrayList<>();
         List<JobItem> appliedlist = new ArrayList<>();
-        appliedlist.add(new JobItem("Applied 1"));
-        appliedlist.add(new JobItem("Applied 2"));
 
 
 
@@ -51,10 +49,10 @@ public class RecentFragment extends Fragment {
 
             if(appliedmore.getText()!= "See Less") {
                 appliedRecycle.setNestedScrollingEnabled(true);
-                appliedlist.add(new JobItem("Applied 1"));
-                appliedlist.add(new JobItem("Applied 2"));
-                appliedlist.add(new JobItem("Applied 1"));
-                appliedlist.add(new JobItem("Applied 2"));
+                appliedlist.add(new JobItem("Applied 1","Applied 1","Applied 1","Applied 1","Applied 1"));
+                appliedlist.add(new JobItem("Applied 2","Applied 1","Applied 1","Applied 1","Applied 1"));
+                appliedlist.add(new JobItem("Applied 1","Applied 1","Applied 1","Applied 1","Applied 1"));
+                appliedlist.add(new JobItem("Applied 2","Applied 1","Applied 1","Applied 1","Applied 1"));
                 appliedRecycle.setAdapter(appliedAdapter);
                 appliedmore.setText("See Less");
             }
@@ -62,8 +60,8 @@ public class RecentFragment extends Fragment {
                 saveRecycle.scrollToPosition(0);
                 saveRecycle.setNestedScrollingEnabled(false);
                 appliedlist.clear();
-                appliedlist.add(new JobItem("Applied 1"));
-                appliedlist.add(new JobItem("Applied 2"));
+                appliedlist.add(new JobItem("Applied 1","Applied 1","Applied 1","Applied 1","Applied 1"));
+                appliedlist.add(new JobItem("Applied 2","Applied 1","Applied 1","Applied 1","Applied 1"));
                 appliedRecycle.setAdapter(appliedAdapter);
                 appliedmore.setText("See more...");
             }
@@ -77,8 +75,8 @@ public class RecentFragment extends Fragment {
 
 
 
-        savejobList.add(new JobItem("Job 1"));
-        savejobList.add(new JobItem("Job 2"));
+        savejobList.add(new JobItem("Job 1","Applied 1","Applied 1","Applied 1","Applied 1"));
+        savejobList.add(new JobItem("Job 2","Applied 1","Applied 1","Applied 1","Applied 1"));
 
 
         saveRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -89,10 +87,10 @@ public class RecentFragment extends Fragment {
 
             if(savemore.getText()!= "See Less") {
                saveRecycle.setNestedScrollingEnabled(true);
-                savejobList.add(new JobItem("Job 1"));
-                savejobList.add(new JobItem("Job 2"));
-                savejobList.add(new JobItem("Job 1"));
-                savejobList.add(new JobItem("Job 2"));
+                savejobList.add(new JobItem("Job 1","Applied 1","Applied 1","Applied 1","Applied 1"));
+                savejobList.add(new JobItem("Job 2","Applied 1","Applied 1","Applied 1","Applied 1"));
+                savejobList.add(new JobItem("Job 1","Applied 1","Applied 1","Applied 1","Applied 1"));
+                savejobList.add(new JobItem("Job 2","Applied 1","Applied 1","Applied 1","Applied 1"));
                 saveRecycle.setAdapter(savedJobsAdapter);
                savemore.setText("See Less");
            }
@@ -100,8 +98,8 @@ public class RecentFragment extends Fragment {
                saveRecycle.scrollToPosition(0);
                saveRecycle.setNestedScrollingEnabled(false);
                savejobList.clear();
-                savejobList.add(new JobItem("Job 1"));
-                savejobList.add(new JobItem("Job 2"));
+                savejobList.add(new JobItem("Job 1","Applied 1","Applied 1","Applied 1","Applied 1"));
+                savejobList.add(new JobItem("Job 2","Applied 1","Applied 1","Applied 1","Applied 1"));
                 saveRecycle.setAdapter(savedJobsAdapter);
                savemore.setText("See more...");
            }

@@ -25,6 +25,7 @@ import com.google.firebase.FirebaseApp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -34,7 +35,7 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class Homefragment extends Fragment {
+public class Homefragment extends Fragment implements JobAdapter.OnItemClickListener {
 
 
     private FirebaseUser currentUser;
@@ -62,6 +63,8 @@ public class Homefragment extends Fragment {
         TextView userName = view.findViewById(R.id.userName);
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        RecyclerView recyclerView = view.findViewById(R.id.jobRecycler);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         String userId = currentUser.getUid();
         if(student.getName() == null){
 
@@ -126,22 +129,39 @@ public class Homefragment extends Fragment {
 
 
 
-        List<JobItem> jobList = new ArrayList<>();
-        jobList.add(new JobItem("Job 1"));
-        jobList.add(new JobItem("Job 2"));
-        jobList.add(new JobItem("Job 3"));
-        jobList.add(new JobItem("Job 4"));
-        jobList.add(new JobItem("Job 5"));
-        jobList.add(new JobItem("Job 6"));
-        jobList.add(new JobItem("Job 7"));
-        jobList.add(new JobItem("Job 8"));
-        jobList.add(new JobItem("Job 9"));
-        jobList.add(new JobItem("Job 10"));
+     fetchJobList();
+    }
+    private void fetchJobList() {
+        firestore.collection("Jobs").limit(10).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<JobItem> jobList = new ArrayList<>();
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        String jobId = documentSnapshot.getId(); // Retrieve the job ID
+                        String jobTitle = documentSnapshot.getString("jobTitle");
+                        String companyName = documentSnapshot.getString("companyName");
+                        String location = documentSnapshot.getString("location");
+                        String description = documentSnapshot.getString("description");
 
-        // Set up RecyclerView
-        RecyclerView recyclerView = view.findViewById(R.id.jobRecycler);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        JobAdapter jobAdapter = new JobAdapter(jobList);
-        recyclerView.setAdapter(jobAdapter);
+                        jobList.add(new JobItem(jobId, jobTitle, description, companyName, location));
+                    }
+
+                    // Set up RecyclerView
+                    RecyclerView recyclerView = requireView().findViewById(R.id.jobRecycler);
+                    recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+                    JobAdapter jobAdapter = new JobAdapter(jobList, this);
+                    recyclerView.setAdapter(jobAdapter);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Error fetching job list", String.valueOf(e));
+                });
+    }
+
+    @Override
+        public void onItemClick(JobItem jobItem) {
+            Job_Details_student.jobid = jobItem.getJobid();
+            Intent intent = new Intent(getContext(), Job_Details_student.class);
+            startActivity(intent);
+
+
     }
 }
