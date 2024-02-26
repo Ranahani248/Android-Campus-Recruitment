@@ -44,7 +44,9 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/bottom_selected"
-                    android:paddingHorizontal="30dp"
+                    android:paddingHorizontal="15dp"
+                    android:gravity="center"
+
                     android:paddingVertical="10dp">
 
                     <ImageView
@@ -59,7 +61,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:paddingHorizontal="30dp"
+                    android:paddingHorizontal="15dp"
+                    android:gravity="center"
+
                     android:paddingVertical="10dp">
 
                     <ImageView
@@ -68,13 +72,29 @@
                         android:src="@drawable/recent"
                         app:tint="@color/black" />
                 </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/tests"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingHorizontal="15dp"
+                    android:gravity="center"
+                    android:paddingVertical="10dp">
 
+                    <ImageView
+                        android:layout_width="30dp"
+                        android:layout_height="30dp"
+                        android:src="@drawable/baseline_tests"
+                        app:tint="@color/black" />
+                </LinearLayout>
                 <LinearLayout
                     android:id="@+id/maillayout"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:paddingHorizontal="30dp"
+                    android:paddingHorizontal="15dp"
+                    android:gravity="center"
+
                     android:paddingVertical="10dp">
 
                     <ImageView
@@ -84,12 +104,15 @@
                         app:tint="@color/black" />
                 </LinearLayout>
 
+
                 <LinearLayout
                     android:id="@+id/settingslayout"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:paddingHorizontal="30dp"
+                    android:gravity="center"
+
+                    android:paddingHorizontal="15dp"
                     android:paddingVertical="10dp">
 
                     <ImageView

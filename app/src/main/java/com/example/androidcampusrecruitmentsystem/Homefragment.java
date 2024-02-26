@@ -12,10 +12,13 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Parcelable;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.EditorInfo;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,14 +38,15 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class Homefragment extends Fragment implements JobAdapter.OnItemClickListener {
+public class Homefragment extends Fragment implements JobAdapter.OnItemClickListener,JobSearchAdapter.OnItemClickListener {
 
 
     private FirebaseUser currentUser;
     private DocumentReference userRef;
     private FirebaseFirestore firestore;
 
-
+    EditText search;
+    ImageView searchBtn;
 
     public Homefragment() {
         // Required empty public constructor
@@ -61,6 +65,34 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
       View view= inflater.inflate(R.layout.fragment_homefragment, container, false);
         CircleImageView homeImg = view.findViewById(R.id.imageView_home);
         TextView userName = view.findViewById(R.id.userName);
+        search = view.findViewById(R.id.search_bar);
+        searchBtn = view.findViewById(R.id.search_btn);
+
+        searchBtn.setOnClickListener(v -> {
+
+            if(search.getText().toString().length() > 0){
+                searchJobdetails(search.getText().toString());
+            }
+           else if(search.getText().toString().isEmpty()){
+               search.setError("Search field cannot be empty");
+                fetchJobList();
+            }
+        });
+        search.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                // Perform search when the "Enter" key is pressed
+                if (search.getText().toString().length() > 0) {
+                    searchJobdetails(search.getText().toString());
+                } else {
+                    fetchJobList();
+                }
+                return true; // Consume the event
+            }
+            return false; // Let other listeners handle the event
+        });
+
+
+
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         RecyclerView recyclerView = view.findViewById(R.id.jobRecycler);
@@ -93,6 +125,7 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
           Intent intent = new Intent(getContext(), Profile_Management.class);
           startActivity(intent);
       });
+        fetchJobList();
         return view;
     }
     private void loadProfilePicture(ImageView homeImg) {
@@ -129,20 +162,31 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
 
 
 
-     fetchJobList();
+
     }
-    private void fetchJobList() {
+    void fetchJobList() {
+        if (!isAdded()) {
+            return;
+        }
+
         firestore.collection("Jobs").limit(10).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (!isAdded()) {
+                        // Fragment is not attached, do nothing
+                        return;
+                    }
+
                     List<JobItem> jobList = new ArrayList<>();
                     for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        String jobId = documentSnapshot.getId(); // Retrieve the job ID
+                        String jobId = documentSnapshot.getId();
                         String jobTitle = documentSnapshot.getString("jobTitle");
                         String companyName = documentSnapshot.getString("companyName");
                         String location = documentSnapshot.getString("location");
+                        String salary = documentSnapshot.getString("Salary");
                         String description = documentSnapshot.getString("description");
+                        String recruiterId = documentSnapshot.getString("recruiterId");
 
-                        jobList.add(new JobItem(jobId, jobTitle, description, companyName, location));
+                        jobList.add(new JobItem(jobId, jobTitle, description, companyName,salary, location, recruiterId));
                     }
 
                     // Set up RecyclerView
@@ -152,16 +196,49 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
                     recyclerView.setAdapter(jobAdapter);
                 })
                 .addOnFailureListener(e -> {
+                    if (isAdded()) {
+                        // Fragment is still attached, handle the failure
+                        Log.e("Error fetching job list", String.valueOf(e));
+                    }
+                });
+    }
+    private void searchJobdetails(String searchText) {
+        firestore.collection("Jobs").limit(10).get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<JobItem> jobList = new ArrayList<>();
+                    for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                        if (documentSnapshot.getString("jobTitle") != null && Objects.requireNonNull(documentSnapshot.getString("jobTitle")).toLowerCase().contains(searchText.toLowerCase())) {
+                            String jobId = documentSnapshot.getId(); // Retrieve the job ID
+                            String jobTitle = documentSnapshot.getString("jobTitle");
+                            String companyName = documentSnapshot.getString("companyName");
+                            String location = documentSnapshot.getString("location");
+                            String salary = documentSnapshot.getString("Salary");
+                            String description = documentSnapshot.getString("description");
+                            String recruiterId = documentSnapshot.getString("recruiterId");
+
+                            jobList.add(new JobItem(jobId, jobTitle, description, companyName,salary, location,recruiterId));
+                        }
+                    }
+                    if(jobList.isEmpty()){
+                        Toast.makeText(getContext(), "No Jobs Found", Toast.LENGTH_SHORT).show();
+                    }
+                    SearchBar.searched = searchText;
+                    search.setText("");
+                    SearchBar.jobList = jobList;
+                    Intent intent = new Intent(getContext(), SearchBar.class);
+                    startActivity(intent);
+                })
+                .addOnFailureListener(e -> {
                     Log.e("Error fetching job list", String.valueOf(e));
                 });
     }
-
     @Override
         public void onItemClick(JobItem jobItem) {
             Job_Details_student.jobid = jobItem.getJobid();
+            Job_Details_student.recruiterid = jobItem.getRecruiterid();
+            Job_Details_student.studentid = currentUser.getUid();
             Intent intent = new Intent(getContext(), Job_Details_student.class);
             startActivity(intent);
-
 
     }
 }

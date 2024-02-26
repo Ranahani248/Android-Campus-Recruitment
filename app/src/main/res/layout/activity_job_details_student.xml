@@ -102,12 +102,41 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="20dp"
-        android:text="Description"
+        android:text="Salary"
         android:textColor="@color/black"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/job_details_student_location" />
+
+    <TextView
+        android:id="@+id/job_details_student_salary"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="40dp"
+        android:layout_marginTop="10dp"
+        android:textSize="18sp"
+        android:text = "Salary"
+
+        android:textColor="@color/black"
+        android:padding="5dp"
+        android:textAlignment="center"
+        android:background="@drawable/jobcard_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+    <TextView
+        android:id="@+id/textView10"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:text="Description"
+        android:textColor="@color/black"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/job_details_student_salary" />
 
     <TextView
         android:id="@+id/job_details_student_description"
@@ -117,14 +146,14 @@
         android:layout_marginTop="10dp"
         android:textSize="18sp"
         android:text = "description"
-
         android:textColor="@color/black"
         android:padding="5dp"
         android:textAlignment="center"
         android:background="@drawable/jobcard_bg"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView9" />
+        app:layout_constraintTop_toBottomOf="@+id/textView10" />
+
     <androidx.appcompat.widget.AppCompatButton
         android:id="@+id/job_details_student_apply"
         android:layout_width="match_parent"
@@ -140,5 +169,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/job_details_student_description" />
 
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/job_details_student_save"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="70dp"
+        android:layout_marginTop="30dp"
+        android:text="Save Job"
+        android:textColor="@color/black"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:background="@drawable/button_bg"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/job_details_student_apply" />
 </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>

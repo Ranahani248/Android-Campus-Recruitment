@@ -1,7 +1,23 @@
 package com.example.androidcampusrecruitmentsystem;
 
 public class JobItem {
-    private String  jobid,jobTitle, jobDescription, jobCompany, jobLocation;
+    private String  jobid,jobTitle, jobDescription, jobCompany, jobLocation,jobSalary, recruiterid;
+
+    public String getJobSalary() {
+        return jobSalary;
+    }
+
+    public void setJobSalary(String jobSalary) {
+        this.jobSalary = jobSalary;
+    }
+
+    public String getRecruiterid() {
+        return recruiterid;
+    }
+
+    public void setRecruiterid(String recruiterid) {
+        this.recruiterid = recruiterid;
+    }
 
     public void setJobTitle(String jobTitle) {
         this.jobTitle = jobTitle;
@@ -39,12 +55,17 @@ public class JobItem {
         this.jobLocation = jobLocation;
     }
 
-    public JobItem( String jobid,String jobTitle, String jobDescription, String jobCompany, String jobLocation) {
+    public JobItem( String jobid,String jobTitle, String jobDescription, String jobCompany,String jobSalary, String jobLocation, String recruiterId) {
        this.jobid = jobid;
         this.jobTitle = jobTitle;
         this.jobDescription = jobDescription;
         this.jobCompany = jobCompany;
+        this.jobSalary = jobSalary;
         this.jobLocation = jobLocation;
+        this.recruiterid = recruiterId;
+    }
+    public JobItem() {
+        // Default constructor required for Firestore deserialization
     }
 
     public String getJobTitle() {

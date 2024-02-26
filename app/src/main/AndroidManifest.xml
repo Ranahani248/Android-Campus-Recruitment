@@ -13,22 +13,30 @@
         android:theme="@style/AppTheme"
         tools:targetApi="31">
         <activity
+            android:name=".SearchBar"
+            android:windowSoftInputMode="stateHidden"
+            android:exported="false" />
+        <activity
             android:name=".Job_Details_student"
             android:exported="false" />
         <activity
             android:name=".Profile_Management_recruiter"
+            android:windowSoftInputMode="stateHidden"
             android:exported="false" />
         <activity
             android:name=".Job_post"
             android:exported="false" />
         <activity
             android:name=".signUp_page"
+            android:windowSoftInputMode="stateHidden"
             android:exported="false" />
         <activity
             android:name=".Profile_Management"
+            android:windowSoftInputMode="stateHidden"
             android:exported="false" />
         <activity
             android:name=".loginPage"
+            android:windowSoftInputMode="stateHidden"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,10 +46,12 @@
         </activity>
         <activity
             android:name=".MainActivityRecruiter"
-            android:exported="false" />
+            android:windowSoftInputMode="stateHidden"
+        android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:windowSoftInputMode="stateHidden"
+        android:exported="false" />
     </application>
 
 </manifest>

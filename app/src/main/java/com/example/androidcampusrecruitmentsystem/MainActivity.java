@@ -1,5 +1,6 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
@@ -8,6 +9,7 @@ import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -21,7 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivity extends AppCompatActivity {
     FrameLayout container;
-    LinearLayout homelayout,maillayout,recentlayout,settingslayout;
+    LinearLayout homelayout,maillayout,recentlayout,settingslayout,testlayout;
     private FirebaseUser currentUser;
     private DocumentReference userRef;
     static final User student = new User();
@@ -33,19 +35,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
+
         container = findViewById(R.id.container);
         homelayout = findViewById(R.id.homelayout);
         maillayout = findViewById(R.id.maillayout);
         recentlayout = findViewById(R.id.recentlayout);
         settingslayout = findViewById(R.id.settingslayout);
+        testlayout = findViewById(R.id.tests);
+
 
         bottom_selected = ResourcesCompat.getDrawable(getResources(),R.drawable.bottom_selected,null);
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
 
+            }
+        };
+        getOnBackPressedDispatcher().addCallback(this, callback);
         Homefragment homefragment = new Homefragment();
         MailFragment mailFragment = new MailFragment();
         RecentFragment recentFragment = new RecentFragment();
         SettingsFragment settingsFragment = new SettingsFragment();
-        setFragment(homefragment);
+        TestFragment testFragment = new TestFragment();
+        setFragment(homefragment,homelayout);
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -67,49 +80,41 @@ public class MainActivity extends AppCompatActivity {
         homelayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(homefragment);
-                homelayout.setBackground(bottom_selected);
-                maillayout.setBackground(null);
-                recentlayout.setBackground(null);
-                settingslayout.setBackground(null);
-
+                setFragment(homefragment,homelayout);
             }
         });
         maillayout.setOnClickListener(v -> {
-            setFragment(mailFragment);
-            maillayout.setBackground(bottom_selected);
-            homelayout.setBackground(null);
-            recentlayout.setBackground(null);
-            settingslayout.setBackground(null);
+            setFragment(mailFragment,maillayout);
 
+
+        });
+        testlayout.setOnClickListener(v -> {
+            setFragment(testFragment,testlayout);
         });
         recentlayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(recentFragment);
-                recentlayout.setBackground(bottom_selected);
-                homelayout.setBackground(null);
-                maillayout.setBackground(null);
-                settingslayout.setBackground(null);
+                setFragment(recentFragment,recentlayout);
             }
         });
         settingslayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(settingsFragment);
-                settingslayout.setBackground(bottom_selected);
-                recentlayout.setBackground(null);
-                homelayout.setBackground(null);
-                maillayout.setBackground(null);
+                setFragment(settingsFragment, settingslayout);
             }
         });
     }
-    public void setFragment(Fragment fragment){
+    public void setFragment(Fragment fragment, LinearLayout layout){
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container,fragment)
                 .commit();
-
+        testlayout.setBackground(null);
+        settingslayout.setBackground(null);
+        homelayout.setBackground(null);
+        maillayout.setBackground(null);
+        recentlayout.setBackground(null);
+        layout.setBackground(bottom_selected);
     }
     private void setImage() {
         currentUser = FirebaseAuth.getInstance().getCurrentUser();

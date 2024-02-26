@@ -4,17 +4,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import java.util.List;
 
-public class JobAdapter extends RecyclerView.Adapter<JobAdapter.ViewHolder> {
+public class JobSearchAdapter extends RecyclerView.Adapter<JobSearchAdapter.ViewHolder> {
 
     public static List<JobItem> jobList;
     private OnItemClickListener onItemClickListener; // Define listener member variable
 
-    public JobAdapter(List<JobItem> jobList, OnItemClickListener onItemClickListener) {
-        JobAdapter.jobList = jobList;
+    public JobSearchAdapter(List<JobItem> jobList, OnItemClickListener onItemClickListener) {
+        JobSearchAdapter.jobList = jobList;
         this.onItemClickListener = onItemClickListener;
     }
 

@@ -24,7 +24,7 @@ public class Job_post extends AppCompatActivity {
     private DocumentReference userRef;
     FirebaseUser currentUser;
     ConstraintLayout constraintLayout;
-    EditText jobTitle1, companyName1, location1, description1;
+    EditText jobTitle1, companyName1, location1, description1, salary1;
     ProgressBar progressBar;
     Button postButton;
 
@@ -45,6 +45,7 @@ public class Job_post extends AppCompatActivity {
         companyName1 = findViewById(R.id.companyName);
         location1 = findViewById(R.id.location);
         description1 = findViewById(R.id.description);
+        salary1 = findViewById(R.id.salary);
 
         userRef = firestore.collection("Recruiters").document(userId);
 
@@ -57,6 +58,7 @@ public class Job_post extends AppCompatActivity {
                 String companyName = companyName1.getText().toString();
                 String location = location1.getText().toString();
                 String description = description1.getText().toString();
+                String salary = salary1.getText().toString();
 
                 // Check if any of the fields is null or empty
                 if (jobTitle.isEmpty()) {
@@ -71,6 +73,9 @@ public class Job_post extends AppCompatActivity {
                else if (location.isEmpty()) {
                     ((EditText) findViewById(R.id.location)).setError("Location is required");
                }
+               else if (salary.isEmpty()) {
+                    ((EditText) findViewById(R.id.salary)).setError("Location is required");
+                }
 
                else if (description.isEmpty()) {
                     ((EditText) findViewById(R.id.description)).setError("Description is required");
@@ -82,6 +87,7 @@ public class Job_post extends AppCompatActivity {
                     job_details.put("jobTitle", jobTitle);
                     job_details.put("companyName", companyName);
                     job_details.put("location", location);
+                    job_details.put("Salary", salary);
                     job_details.put("description", description);
                     job_details.put("recruiterId", recruiterId);
 
