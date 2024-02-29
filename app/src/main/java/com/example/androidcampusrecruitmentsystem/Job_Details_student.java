@@ -1,5 +1,6 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
@@ -22,11 +23,11 @@ public class Job_Details_student extends AppCompatActivity {
 
     static String jobid ,studentid,recruiterid;
     private FirebaseFirestore firestore;
-
+    static boolean backRecent;
 
     static TextView jobtitle_studentdetails, jobCompany_studentdetails, joblocation_studentdetails,jobsalary_studentdetails, jobdescription_studentdetails;
 
-Button savebtn, applybtn;
+Button savebtn, applybtn, pendingbtn;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,8 +39,18 @@ Button savebtn, applybtn;
         jobsalary_studentdetails = findViewById(R.id.job_details_student_salary);
         savebtn = findViewById(R.id.job_details_student_save);
         applybtn = findViewById(R.id.job_details_student_apply);
+        pendingbtn = findViewById(R.id.job_details_student_pending);
         firestore = FirebaseFirestore.getInstance();
+        OnBackPressedCallback callback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+            Intent intent = new Intent(Job_Details_student.this, MainActivity.class);
+            MainActivity.backRecent = backRecent;
+            startActivity(intent);
+            }
+        };
 
+        getOnBackPressedDispatcher().addCallback(this, callback);
         for(JobItem jobItem: JobAdapter.jobList){
             if(jobItem.getJobid().equals(jobid)){
                 jobtitle_studentdetails.setText(jobItem.getJobTitle());
@@ -55,9 +66,7 @@ Button savebtn, applybtn;
 
 
         applybtn.setOnClickListener(v -> {
-         setData("Applications");
-            applybtn.setText("Applied");
-            applybtn.setEnabled(false);
+            checkCVUploaded();
         });
         savebtn.setOnClickListener(v -> {
             if(savebtn.getText().toString().equals("Unsave")){
@@ -70,6 +79,32 @@ Button savebtn, applybtn;
             }
         });
 
+    }
+    private void checkCVUploaded() {
+        firestore.collection("Students")
+                .document(studentid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String cvPath = documentSnapshot.getString("cvFile");
+
+                        if (cvPath != null && !cvPath.isEmpty()) {
+                            // Student has uploaded a CV, proceed with applying
+                            setData("Applications");
+                            applybtn.setText("Applied");
+                            savebtn.setVisibility(View.GONE);
+                            pendingbtn.setVisibility(View.VISIBLE);
+                            applybtn.setEnabled(false);
+                        } else {
+                            // Student has not uploaded a CV, show a Toast message
+                            Toast.makeText(Job_Details_student.this, "Please upload your CV first in Profile Management.", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle the failure to retrieve student data
+                    Log.e("Job_post", "Error checking CV upload status", e);
+                });
     }
     public  void setData(String collection){
         String title = jobtitle_studentdetails.getText().toString();
@@ -98,11 +133,26 @@ Button savebtn, applybtn;
 
         firestore.collection(collection).add(Application_details)
                 .addOnSuccessListener(documentReference -> {
+                    if(collection.equals("Applications")){
+                        deleteSavedJobsWithJobId(job);
+                    }
                     Log.d("Job_post", "Job ID updated successfully");
-
-
                 })
                 .addOnFailureListener(e -> {
+                });
+    }
+    private void deleteSavedJobsWithJobId(String jobId) {
+        firestore.collection("SavedJobs")
+                .whereEqualTo("jobId", jobId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
+                        // Delete each document with the matching jobId
+                        document.getReference().delete();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure to query the collection
                 });
     }
     public void check(String collection){
@@ -114,6 +164,8 @@ Button savebtn, applybtn;
                     if (queryDocumentSnapshots.size() > 0) {
                         if (collection.equals("Applications")) {
                             applybtn.setText("Applied");
+                            savebtn.setVisibility(View.GONE);
+                            pendingbtn.setVisibility(View.VISIBLE);
                             applybtn.setEnabled(false);
                         } else if (collection.equals("SavedJobs")) {
                             savebtn.setText("Unsave");
@@ -142,6 +194,13 @@ Button savebtn, applybtn;
                                     // You can perform any additional actions after deletion if needed
                                     if (collection.equals("SavedJobs")) {
                                         savebtn.setText("Save Job");
+                                    }
+                                    for(JobItem jobItem: RecentFragment.savejobList){
+                                        if(jobItem.getJobid().equals(jobid)){
+
+                                            };
+                                            break;
+
                                     }
                                 })
                                 .addOnFailureListener(e -> {

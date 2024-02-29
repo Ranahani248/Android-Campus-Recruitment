@@ -1,15 +1,23 @@
 package com.example.androidcampusrecruitmentsystem;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.viewmodel.CreationExtras;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -20,17 +28,20 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RecentFragment extends Fragment {
+public class RecentFragment extends Fragment implements SavedJobsAdapter.OnItemClickListener, AppliedAdapter.OnItemClickListener {
 
     TextView savemore,appliedmore;
     private FirebaseFirestore firestore;
     private FirebaseUser currentUser;
-    List<JobItem> savejobList = new ArrayList<>();
-    List<JobItem> appliedlist = new ArrayList<>();
+    static List<JobItem> savejobList = new ArrayList<>();
+    static List<JobItem> appliedlist = new ArrayList<>();
     RecyclerView appliedRecycle,saveRecycle;
-    SavedJobsAdapter savedJobsAdapter;
+    TextView noSaved, noApplication, textView3;
+    ProgressBar appliedBar, saveBar;
+    ConstraintLayout applylayout,saveLayout;
+    static SavedJobsAdapter savedJobsAdapter;
 
-    AppliedAdapter appliedAdapter;
+    AppliedAdapter appliedAdapter = new AppliedAdapter(appliedlist);
     String userId;
     public RecentFragment() {
     }
@@ -52,17 +63,47 @@ public class RecentFragment extends Fragment {
         userId = currentUser.getUid();
          saveRecycle = view.findViewById(R.id.savedJobsRecycler);
          appliedRecycle = view.findViewById(R.id.applied_recycler);
+        appliedBar = view.findViewById(R.id.progressBarApplication);
+        saveBar = view.findViewById(R.id.progressBarSaved);
+        applylayout = view.findViewById(R.id.applylayout);
+        saveLayout = view.findViewById(R.id.saveLayout);
+        noSaved = view.findViewById(R.id.noSave);
+        textView3 = view.findViewById(R.id.textView3);
+        noApplication = view.findViewById(R.id.noApplication);
         savemore.setVisibility(View.GONE);
         appliedmore.setVisibility(View.GONE);
+        savejobList.clear();
+        appliedlist.clear();
+        noApplication.setVisibility(View.GONE);
+        noSaved.setVisibility(View.GONE);
+        load(saveBar, true);
+        load(appliedBar, true);
 
+        saveRecycle.setAdapter(savedJobsAdapter);
+        appliedRecycle.setAdapter(appliedAdapter);
         checkJobs("Applications",true);
         checkJobs("SavedJobs",true);
+
+
+
+        appliedRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        appliedAdapter.setOnItemClickListener(savedJob -> {
+            Job_Details_student.jobid = savedJob.getJobid();
+            Job_Details_student.recruiterid = savedJob.getRecruiterid();
+            Job_Details_student.studentid = currentUser.getUid();
+            Job_Details_student.backRecent = true;
+            Intent intent = new Intent(getContext(), Job_Details_student.class);
+            startActivity(intent);
+        });
+        appliedRecycle.setAdapter(appliedAdapter);
 
 
         appliedmore.setOnClickListener(v->{
 
             if(appliedmore.getText()!= "See Less") {
                 checkJobs("Applications",false);
+
                 appliedmore.setText("See Less");
             }
             else {
@@ -73,22 +114,30 @@ public class RecentFragment extends Fragment {
 
         });
 
-
-
         saveRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
          savedJobsAdapter = new SavedJobsAdapter(savejobList);
+        savedJobsAdapter.setOnItemClickListener(savedJob -> {
+            Job_Details_student.jobid = savedJob.getJobid();
+            Job_Details_student.recruiterid = savedJob.getRecruiterid();
+            Job_Details_student.studentid = currentUser.getUid();
+            Job_Details_student.backRecent = true;
+            Intent intent = new Intent(getContext(), Job_Details_student.class);
+            startActivity(intent);
+        });
         saveRecycle.setAdapter(savedJobsAdapter);
+
         savemore.setOnClickListener(v->{
 
 
             if(savemore.getText()!= "See Less") {
-              checkJobs("SavedJobs", false);
+                checkJobs("SavedJobs", false);
                savemore.setText("See Less");
            }
            else {
                 less(savejobList);
                  saveRecycle.setAdapter(savedJobsAdapter);
-               savemore.setText("See more...");
+                savedJobsAdapter.notifyDataSetChanged();
+                savemore.setText("See more...");
            }
 
 
@@ -126,9 +175,8 @@ public class RecentFragment extends Fragment {
                                 if(less) {
                                     less(savejobList);
                                 }
-                                saveRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
-                                savedJobsAdapter = new SavedJobsAdapter(savejobList);
-                                saveRecycle.setAdapter(savedJobsAdapter);
+                                savedJobsAdapter.notifyDataSetChanged();
+
                             } else if (collection.equals("Applications")) {
                                 appliedlist.add(new JobItem(jobId, jobTitle, description, companyName, salary, location, recruiterId));
                                 if(appliedlist.size() > 2) {
@@ -137,16 +185,46 @@ public class RecentFragment extends Fragment {
                                 if(less) {
                                     less(appliedlist);
                                 }
-                                appliedRecycle.setLayoutManager(new LinearLayoutManager(getContext()));
-                                appliedAdapter = new AppliedAdapter(appliedlist);
-                                appliedRecycle.setAdapter(appliedAdapter);
+                                appliedAdapter.notifyDataSetChanged();
                             }
 
                         }
+
+
+
                     }
+                    load(appliedBar, false);
+                    if(appliedlist.isEmpty()){
+                        noApplication.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        noApplication.setVisibility(View.GONE);
+                        applylayout.setVisibility(View.GONE);
+                    }
+                    load(saveBar, false);
+                    if(savejobList.isEmpty()){
+                        noSaved.setVisibility(View.VISIBLE);
+
+                    }
+                    else {
+                        noSaved.setVisibility(View.GONE);
+                        saveLayout.setVisibility(View.GONE);
+                    }
+                    savedJobsAdapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    // Handle the failure to query the collection
+                    if(appliedlist.isEmpty()){
+                        noApplication.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        noApplication.setVisibility(View.GONE);
+                    }
+                    if(savejobList.isEmpty()){
+                        noSaved.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        noSaved.setVisibility(View.GONE);
+                    }
                 });
     }
     public void less(List<JobItem> less) {
@@ -156,5 +234,20 @@ public class RecentFragment extends Fragment {
             }
         }
 
+
     }
+
+    @Override
+    public void onItemClick(JobItem jobItem) {
+
+    }
+    public void load(ProgressBar progressBar, boolean load) {
+        if (load) {
+            progressBar.setVisibility(View.VISIBLE);
+        } else {
+            progressBar.setVisibility(View.GONE);
+        }
+
+    }
+
 }

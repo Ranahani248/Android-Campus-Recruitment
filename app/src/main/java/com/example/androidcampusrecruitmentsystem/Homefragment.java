@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -47,6 +48,8 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
 
     EditText search;
     ImageView searchBtn;
+    ProgressBar homeProgress;
+
 
     public Homefragment() {
         // Required empty public constructor
@@ -67,6 +70,8 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
         TextView userName = view.findViewById(R.id.userName);
         search = view.findViewById(R.id.search_bar);
         searchBtn = view.findViewById(R.id.search_btn);
+        homeProgress = view.findViewById(R.id.home_progress);
+        homeProgress.setVisibility(View.VISIBLE);
 
         searchBtn.setOnClickListener(v -> {
 
@@ -136,17 +141,19 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
 
             firestore.collection("Students").document(uid).get()
                     .addOnSuccessListener(documentSnapshot -> {
-                        if (documentSnapshot.exists()) {
-                            // Check if the 'profilePicture' field exists
-                            if (documentSnapshot.contains("profilePicture")) {
-                                // Download the profile picture into the ImageView using Glide or Picasso
-                                Glide.with(this)
-                                        .load(documentSnapshot.getString("profilePicture"))
-                                        .placeholder(R.drawable.user)
-                                        .error(R.drawable.user)
-                                        .into(homeImg);
-                            }
+                        if(isAdded()) {
+                            if (documentSnapshot.exists()) {
+                                // Check if the 'profilePicture' field exists
+                                if (documentSnapshot.contains("profilePicture")) {
+                                    // Download the profile picture into the ImageView using Glide or Picasso
+                                    Glide.with(this)
+                                            .load(documentSnapshot.getString("profilePicture"))
+                                            .placeholder(R.drawable.user)
+                                            .error(R.drawable.user)
+                                            .into(homeImg);
+                                }
 
+                            }
                         }
                     })
                     .addOnFailureListener(e -> {
@@ -169,7 +176,7 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
             return;
         }
 
-        firestore.collection("Jobs").limit(10).get()
+        firestore.collection("Jobs").limit(15).get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!isAdded()) {
                         // Fragment is not attached, do nothing
@@ -194,11 +201,15 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
                     recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
                     JobAdapter jobAdapter = new JobAdapter(jobList, this);
                     recyclerView.setAdapter(jobAdapter);
+                    homeProgress.setVisibility(View.GONE);
+
                 })
                 .addOnFailureListener(e -> {
                     if (isAdded()) {
-                        // Fragment is still attached, handle the failure
+                        Toast.makeText(getContext(), "Check your Internet Connection\nand try Again", Toast.LENGTH_SHORT).show();
                         Log.e("Error fetching job list", String.valueOf(e));
+                        homeProgress.setVisibility(View.GONE);
+
                     }
                 });
     }
@@ -238,6 +249,7 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
             Job_Details_student.recruiterid = jobItem.getRecruiterid();
             Job_Details_student.studentid = currentUser.getUid();
             Intent intent = new Intent(getContext(), Job_Details_student.class);
+            Job_Details_student.backRecent = false;
             startActivity(intent);
 
     }

@@ -5,19 +5,19 @@
     android:id="@+id/jobViewholder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginVertical="14dp"
+    android:layout_marginVertical="17dp"
     android:background="@drawable/jobcard_bg"
     android:layout_marginHorizontal="30dp"
     android:padding="10dp"
     android:elevation="15dp">
 
-    <ImageView
+    <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/logo"
         android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_margin="10dp"
         android:scaleType="centerCrop"
-        android:src="@drawable/apple_logo"
+        android:src="@drawable/user"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

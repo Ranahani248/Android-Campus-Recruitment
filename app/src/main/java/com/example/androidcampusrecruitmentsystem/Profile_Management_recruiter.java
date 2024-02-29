@@ -79,7 +79,8 @@ public class Profile_Management_recruiter extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-
+                Intent intent = new Intent(Profile_Management_recruiter.this, MainActivityRecruiter.class);
+                startActivity(intent);
             }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);

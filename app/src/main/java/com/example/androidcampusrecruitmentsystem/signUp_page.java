@@ -1,11 +1,14 @@
 package com.example.androidcampusrecruitmentsystem;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,8 +31,9 @@ public class signUp_page extends AppCompatActivity {
     FirebaseAuth mAuth;
     Button signup_student_button, signup_recruiter_button;
     TextView signup_login_button;
+    ConstraintLayout signup_layout;
 
-
+    ProgressBar progressBar;
     EditText emailSignUp, passwordSignUp ,nameSignUp;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +44,8 @@ public class signUp_page extends AppCompatActivity {
         nameSignUp = findViewById(R.id.signup_name);
         signup_login_button = findViewById(R.id.signup_login_button);
         signup_recruiter_button = findViewById(R.id.signup_recruiter_button);
+        progressBar = findViewById(R.id.signup_progress);
+        signup_layout = findViewById(R.id.ConstraintSignup);
         signup_login_button.setOnClickListener(v -> {
             Intent intent = new Intent(signUp_page.this, loginPage.class);
             startActivity(intent);
@@ -56,9 +62,11 @@ public class signUp_page extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         signup_student_button = findViewById(R.id.signup_student_button);
         signup_student_button.setOnClickListener(v -> {
+            setProgressBar(true);
             createUser("Student");
         });
         signup_recruiter_button.setOnClickListener(v -> {
+            setProgressBar(true);
             createUser("Recruiter");
         });
 
@@ -83,13 +91,19 @@ public class signUp_page extends AppCompatActivity {
         if(name.isEmpty()){
             nameSignUp.setError("Name is required");
             nameSignUp.requestFocus();
+            setProgressBar(false);
+
         }
        else if (email.isEmpty()) {
             emailSignUp.setError("Email is required");
             emailSignUp.requestFocus();
+            setProgressBar(false);
+
         } else if (password.isEmpty()) {
             passwordSignUp.setError("Password is required");
             passwordSignUp.requestFocus();
+            setProgressBar(false);
+
         }  else {
             mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                 if (task.isSuccessful()) {
@@ -109,10 +123,14 @@ public class signUp_page extends AppCompatActivity {
                                 .addOnSuccessListener(documentReference -> {
                                     Toast.makeText(signUp_page.this, "Signed up as recruiter", Toast.LENGTH_SHORT).show();
                                     // Redirect to the RecruiterActivity
+                                    setProgressBar(false);
+
                                     startActivity(new Intent(signUp_page.this, Profile_Management_recruiter.class));
                                     finish(); // Close the current activity
                                 })
                                 .addOnFailureListener(e -> {
+                                    setProgressBar(false);
+
                                     Toast.makeText(signUp_page.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
                     }
@@ -122,19 +140,47 @@ public class signUp_page extends AppCompatActivity {
                                 .addOnSuccessListener(documentReference -> {
                                     Toast.makeText(signUp_page.this, "Signed Up as student", Toast.LENGTH_SHORT).show();
                                     // Redirect to the StudentActivity
+                                    setProgressBar(false);
+
                                     startActivity(new Intent(signUp_page.this, Profile_Management.class));
                                     finish(); // Close the current activity
                                 })
                                 .addOnFailureListener(e -> {
+                                    setProgressBar(false);
+
                                     Toast.makeText(signUp_page.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
                     }
 
                 } else {
+                    setProgressBar(false);
                     Toast.makeText(signUp_page.this, "Registration Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                 }
             });
         }
+    }
+    public void setProgressBar(boolean show) {
+        if (show) {
+            progressBar.setVisibility(View.VISIBLE);
+            nameSignUp.setEnabled(false);
+            emailSignUp.setEnabled(false);
+            passwordSignUp.setEnabled(false);
+            signup_student_button.setEnabled(false);
+            signup_recruiter_button.setEnabled(false);
+            signup_login_button.setEnabled(false);
+            signup_layout.setAlpha(0.5f);
+
+        } else {
+            progressBar.setVisibility(View.GONE);
+            nameSignUp.setEnabled(true);
+            emailSignUp.setEnabled(true);
+            passwordSignUp.setEnabled(true);
+            signup_student_button.setEnabled(true);
+            signup_recruiter_button.setEnabled(true);
+            signup_login_button.setEnabled(true);
+            signup_layout.setAlpha(1f);
+        }
+
     }
 
 }

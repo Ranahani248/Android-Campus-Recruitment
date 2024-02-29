@@ -63,22 +63,31 @@ public class Job_post extends AppCompatActivity {
                 // Check if any of the fields is null or empty
                 if (jobTitle.isEmpty()) {
                     ((EditText) findViewById(R.id.job_title)).setError("Job title is required");
+                    resetProgressBar();
+
                 }
 
                 else if (companyName.isEmpty()) {
                     ((EditText) findViewById(R.id.companyName)).setError("Company name is required");
+                    resetProgressBar();
 
                 }
 
                else if (location.isEmpty()) {
                     ((EditText) findViewById(R.id.location)).setError("Location is required");
-               }
+                    resetProgressBar();
+
+                }
                else if (salary.isEmpty()) {
-                    ((EditText) findViewById(R.id.salary)).setError("Location is required");
+                    ((EditText) findViewById(R.id.salary)).setError("Salary is required");
+                    resetProgressBar();
+
                 }
 
                else if (description.isEmpty()) {
                     ((EditText) findViewById(R.id.description)).setError("Description is required");
+
+                    resetProgressBar();
                 } else {
                     // Assuming you have some kind of user authentication in place, get the recruiter ID
                     String recruiterId = currentUser.getUid(); // Use the current user's UID as the recruiter ID

@@ -36,12 +36,13 @@ import java.util.Objects;
 import de.hdodenhof.circleimageview.CircleImageView;
 
 
-public class Home_recruiter extends Fragment {
+public class Home_recruiter extends Fragment implements JobAdapter_recruiter.OnItemClickListener {
 
 
     private FirebaseUser currentUser;
     private DocumentReference userRef;
     private FirebaseFirestore firestore;
+      static List<JobItem> joblist_recruiter = new ArrayList<>();
 
 
     @Override
@@ -59,7 +60,7 @@ public class Home_recruiter extends Fragment {
         View view= inflater.inflate(R.layout.fragment_home_recruiter, container, false);
         CircleImageView homeImg_recruiter = view.findViewById(R.id.imageView_home_recruiter);
 
-
+        joblist_recruiter.clear();
         if(recruiter.getProfilePictureUri() == null){
             loadProfilePicture(homeImg_recruiter);}
         else{
@@ -113,7 +114,7 @@ public class Home_recruiter extends Fragment {
                             // Check if the 'profilePicture' field exists
                             if (documentSnapshot.contains("profilePicture")) {
                                 // Download the profile picture into the ImageView using Glide or Picasso
-                                Glide.with(requireContext()) // Use requireContext() for safety
+                                Glide.with(homeImg.getContext()) // Use requireContext() for safety
                                         .load(documentSnapshot.getString("profilePicture"))
                                         .placeholder(R.drawable.user)
                                         .error(R.drawable.user)
@@ -131,7 +132,6 @@ public class Home_recruiter extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        List<JobItem> joblist_recruiter = new ArrayList<>();
         ProgressBar progressBar = view.findViewById(R.id.progressBar_homeRecruiter);
         TextView noJobs = view.findViewById(R.id.None_job_recruiter);
 
@@ -156,7 +156,7 @@ public class Home_recruiter extends Fragment {
                         }
                         RecyclerView recyclerView = view.findViewById(R.id.jobRecycler_recruiter);
                         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-                        JobAdapter_recruiter jobAdapter_recruiter = new JobAdapter_recruiter(joblist_recruiter);
+                        JobAdapter_recruiter jobAdapter_recruiter = new JobAdapter_recruiter(joblist_recruiter,this);
                         progressBar.setVisibility(View.GONE);
                         if (joblist_recruiter.isEmpty()) {
                             noJobs.setVisibility(View.VISIBLE);
@@ -168,6 +168,14 @@ public class Home_recruiter extends Fragment {
                     }
                 });
 }
+    @Override
+    public void onItemClick(JobItem jobItem) {
+        Job_Details_recruiter.jobid = jobItem.getJobid();
+        Job_Details_recruiter.recruiterid = currentUser.getUid();
+        Intent intent = new Intent(getContext(), Job_Details_recruiter.class);
+        Job_Details_student.backRecent = false;
+        startActivity(intent);
 
+    }
 
 }

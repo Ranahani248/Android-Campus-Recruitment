@@ -28,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     private DocumentReference userRef;
     static final User student = new User();
     public static final int REQUEST_CODE = 1;
-
+    static boolean backRecent = false;
     private FirebaseFirestore firestore;
     Drawable bottom_selected;
     @Override
@@ -36,7 +36,6 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
-
         container = findViewById(R.id.container);
         homelayout = findViewById(R.id.homelayout);
         maillayout = findViewById(R.id.maillayout);
@@ -59,12 +58,16 @@ public class MainActivity extends AppCompatActivity {
         SettingsFragment settingsFragment = new SettingsFragment();
         TestFragment testFragment = new TestFragment();
         setFragment(homefragment,homelayout);
+        if(backRecent) {
+            setFragment(recentFragment, recentlayout);
+            backRecent = false;
+        }
 
         firestore = FirebaseFirestore.getInstance();
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         String userId = currentUser.getUid();
         userRef = firestore.collection("Students").document(userId);
-
+        student.setProfilePictureUri(null);
 
 
         if(currentUser != null) {
@@ -77,12 +80,7 @@ public class MainActivity extends AppCompatActivity {
             });
 
         }
-        homelayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setFragment(homefragment,homelayout);
-            }
-        });
+        homelayout.setOnClickListener(v -> setFragment(homefragment,homelayout));
         maillayout.setOnClickListener(v -> {
             setFragment(mailFragment,maillayout);
 
@@ -91,18 +89,8 @@ public class MainActivity extends AppCompatActivity {
         testlayout.setOnClickListener(v -> {
             setFragment(testFragment,testlayout);
         });
-        recentlayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setFragment(recentFragment,recentlayout);
-            }
-        });
-        settingslayout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                setFragment(settingsFragment, settingslayout);
-            }
-        });
+        recentlayout.setOnClickListener(v -> setFragment(recentFragment,recentlayout));
+        settingslayout.setOnClickListener(v -> setFragment(settingsFragment, settingslayout));
     }
     public void setFragment(Fragment fragment, LinearLayout layout){
         getSupportFragmentManager()

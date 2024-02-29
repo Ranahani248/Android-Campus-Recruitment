@@ -46,7 +46,8 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@drawable/bottom_selected"
-                    android:paddingHorizontal="30dp"
+                    android:gravity="center"
+                    android:paddingHorizontal="15dp"
                     android:paddingVertical="10dp">
 
                     <ImageView
@@ -61,7 +62,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:paddingHorizontal="30dp"
+                    android:gravity="center"
+
+                    android:paddingHorizontal="15dp"
                     android:paddingVertical="10dp">
 
                     <ImageView
@@ -70,13 +73,30 @@
                         android:src="@drawable/_42803"
                         app:tint="@color/black" />
                 </LinearLayout>
+            <LinearLayout
+                android:id="@+id/tests_Recruiter"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
 
+                android:paddingHorizontal="15dp"
+                android:paddingVertical="10dp">
+
+                <ImageView
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:src="@drawable/baseline_tests"
+                    app:tint="@color/black" />
+            </LinearLayout>
                 <LinearLayout
                     android:id="@+id/maillayout_recruiter"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:paddingHorizontal="30dp"
+                    android:gravity="center"
+
+                    android:paddingHorizontal="15dp"
                     android:paddingVertical="10dp">
 
                     <ImageView
@@ -90,8 +110,9 @@
                     android:id="@+id/settingslayout_recruiter"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:gravity="center"
                     android:layout_weight="1"
-                    android:paddingHorizontal="30dp"
+                    android:paddingHorizontal="15dp"
                     android:paddingVertical="10dp">
 
                     <ImageView

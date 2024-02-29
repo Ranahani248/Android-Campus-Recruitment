@@ -23,7 +23,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 public class MainActivityRecruiter extends AppCompatActivity {
     FrameLayout container;
-    LinearLayout homelayout,maillayout, applicationslayout,settingslayout;
+    LinearLayout homelayout,maillayout, applicationslayout,settingslayout,testlayout;
     private FirebaseUser currentUser;
     public static final int REQUEST_CODE = 2;
 
@@ -38,6 +38,7 @@ public class MainActivityRecruiter extends AppCompatActivity {
         container = findViewById(R.id.container_recruiter);
         homelayout = findViewById(R.id.homelayout_recruiter);
         maillayout = findViewById(R.id.maillayout_recruiter);
+        testlayout = findViewById(R.id.tests_Recruiter);
         applicationslayout = findViewById(R.id.applicationslayout_recruiter);
         settingslayout = findViewById(R.id.settingslayout_recruiter);
         ScrollView scrollView = findViewById(R.id.scrollView);
@@ -45,9 +46,10 @@ public class MainActivityRecruiter extends AppCompatActivity {
         bottom_selected = ResourcesCompat.getDrawable(getResources(),R.drawable.bottom_selected,null);
         Home_recruiter home_recruiter = new Home_recruiter();
         MailFragment mailFragment = new MailFragment();
-        RecentFragment recentFragment = new RecentFragment();
+        ApplicationsFragment applicationsFragment = new ApplicationsFragment();
         Recruiter_Settings_fragment recruiterSettingsFragment = new Recruiter_Settings_fragment();
-        setFragment(home_recruiter);
+        TestFragment_recruiter testFragment = new TestFragment_recruiter();
+        setFragment(home_recruiter,homelayout);
         scrollView.scrollTo(0,1);
 
 
@@ -79,47 +81,45 @@ public class MainActivityRecruiter extends AppCompatActivity {
 
         }
         homelayout.setOnClickListener(v -> {
-                setFragment(home_recruiter);
-                homelayout.setBackground(bottom_selected);
-                maillayout.setBackground(null);
-                applicationslayout.setBackground(null);
-                settingslayout.setBackground(null);
-
+                setFragment(home_recruiter,homelayout);
         });
         maillayout.setOnClickListener(v -> {
-            setFragment(mailFragment);
+            setFragment(mailFragment,maillayout);
             maillayout.setBackground(bottom_selected);
-            homelayout.setBackground(null);
-            applicationslayout.setBackground(null);
-            settingslayout.setBackground(null);
-
         });
         applicationslayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(recentFragment);
-                applicationslayout.setBackground(bottom_selected);
-                homelayout.setBackground(null);
-                maillayout.setBackground(null);
-                settingslayout.setBackground(null);
+                setFragment(applicationsFragment,applicationslayout);
             }
         });
         settingslayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                setFragment(recruiterSettingsFragment);
-                settingslayout.setBackground(bottom_selected);
-                applicationslayout.setBackground(null);
-                homelayout.setBackground(null);
-                maillayout.setBackground(null);
+                setFragment(recruiterSettingsFragment,settingslayout);
             }
         });
+        testlayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                setFragment(testFragment,testlayout);
+            }
+        });
+
+
     }
-    public void setFragment(Fragment fragment){
+    public void setFragment(Fragment fragment, LinearLayout layout){
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.container_recruiter, fragment)
                 .commit();
+        maillayout.setBackground(null);
+        applicationslayout.setBackground(null);
+        settingslayout.setBackground(null);
+        homelayout.setBackground(null);
+        testlayout.setBackground(null);
+        layout.setBackground(bottom_selected);
+
         ScrollView scrollView = findViewById(R.id.scrollView);
         scrollView.scrollTo(0,1);
 

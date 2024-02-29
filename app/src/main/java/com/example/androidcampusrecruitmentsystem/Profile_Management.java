@@ -83,8 +83,8 @@ public class Profile_Management extends AppCompatActivity {
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                // Handle back button press if needed
-            }
+                Intent intent = new Intent(Profile_Management.this, MainActivity.class);
+                startActivity(intent);            }
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
 
@@ -315,9 +315,7 @@ public class Profile_Management extends AppCompatActivity {
 
             Toast.makeText(this, "Uploading file please wait", Toast.LENGTH_SHORT).show();
         }
-        else {
-            Toast.makeText(this, "none", Toast.LENGTH_SHORT).show();
-        }
+
     }
     public void setProgressBar() {
         progressBar.setVisibility(ProgressBar.VISIBLE);

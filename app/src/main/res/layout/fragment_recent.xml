@@ -1,12 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:layout_marginBottom="40dp"
     tools:context=".RecentFragment">
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="wrap_content"
+    >
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -26,23 +30,48 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView"
+        android:paddingBottom="20dp"
         android:nestedScrollingEnabled="false"/>
+   <androidx.constraintlayout.widget.ConstraintLayout
+       android:id="@+id/applylayout"
+       android:layout_width="match_parent"
+
+       android:layout_height="180dp">
+    <TextView
+        android:id="@+id/noApplication"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:gravity="center"
+        android:text="You Have Not Applied\nfor any Jobs."
+        android:textColor="@color/black"
+        android:textSize="17sp"
+       />
+
+       <ProgressBar
+           android:id="@+id/progressBarApplication"
+           android:layout_width="match_parent"
+           android:layout_height="wrap_content"
+           android:visibility="gone"
+           android:scrollbarSize="20dp"
+           app:layout_constraintBottom_toBottomOf="parent"
+           app:layout_constraintEnd_toEndOf="parent"
+           app:layout_constraintTop_toTopOf="parent" />
+   </androidx.constraintlayout.widget.ConstraintLayout>
+
 
     <TextView
         android:id="@+id/applied_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
+        android:layout_gravity="center_horizontal"
         android:text="See more..."
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/applied_recycler" />
+       />
 
 
     <TextView
@@ -55,30 +84,55 @@
         android:textColor="@color/white"
         android:textSize="24sp"
         android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/applied_recycler" />
-
+       />
     <androidx.recyclerview.widget.RecyclerView
+
         android:id="@+id/savedJobsRecycler"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:nestedScrollingEnabled="false"
         android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:paddingBottom="20dp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/textView3" />
+        />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/saveLayout"
+        android:layout_width="match_parent"
+        android:layout_height="180dp">
 
-    <TextView
+        <TextView
+            android:id="@+id/noSave"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_marginTop="20dp"
+            android:visibility="gone"
+            android:text="You Have Not Saved\nany Jobs."
+            android:textColor="@color/black"
+            android:textSize="17sp"
+            />
+
+
+        <ProgressBar
+            android:id="@+id/progressBarSaved"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+   <TextView
         android:id="@+id/saved_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="See more..."
+        android:layout_gravity="center_horizontal"
         android:textColor="@color/black"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/savedJobsRecycler" />
-
-</androidx.constraintlayout.widget.ConstraintLayout>
+        />
+</LinearLayout>
+</ScrollView>
