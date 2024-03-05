@@ -43,7 +43,7 @@ public class Profile_Management extends AppCompatActivity {
     private ImageView backbutton;
     private EditText nameEditText,  phoneNumberEditText;
     TextView dobEditText;
-    Button updateButton, uploadCv;
+    Button updateButton, uploadCv, changePassword;
     Uri selectedImageUri, selectedCvUri;
 
     ConstraintLayout constraintLayout;
@@ -75,7 +75,7 @@ public class Profile_Management extends AppCompatActivity {
         dobEditText = findViewById(R.id.dobEditText);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText);
         updateButton = findViewById(R.id.Save_changes);
-
+        changePassword = findViewById(R.id.Reset_password);
         setProgressBar();
         Handler handler = new Handler(Looper.getMainLooper());
         handler.postDelayed(this::resetProgressBar, 3000);
@@ -88,6 +88,12 @@ public class Profile_Management extends AppCompatActivity {
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
 
+        changePassword.setOnClickListener(v -> {
+            ForgotPassword.recruiter = false;
+            ForgotPassword.change = true;
+            Intent intent = new Intent(Profile_Management.this, ForgotPassword.class);
+            startActivity(intent);
+        });
         // Back button click listener
         backbutton.setOnClickListener(v -> {
             Intent intent = new Intent(Profile_Management.this, MainActivity.class);
@@ -326,6 +332,7 @@ public class Profile_Management extends AppCompatActivity {
         uploadCv.setEnabled(false);
         backbutton.setEnabled(false);
         phoneNumberEditText.setEnabled(false);
+        changePassword.setEnabled(false);
         constraintLayout.setAlpha(0.5f);
 
     }
@@ -339,6 +346,7 @@ public class Profile_Management extends AppCompatActivity {
         uploadCv.setEnabled(true);
         backbutton.setEnabled(true);
         phoneNumberEditText.setEnabled(true);
+        changePassword.setEnabled(true);
         constraintLayout.setAlpha(1f);
     }
 }

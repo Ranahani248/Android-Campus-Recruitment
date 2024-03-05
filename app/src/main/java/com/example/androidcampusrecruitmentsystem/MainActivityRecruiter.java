@@ -29,6 +29,7 @@ public class MainActivityRecruiter extends AppCompatActivity {
 
     private DocumentReference userRef;
     static final User recruiter = new User();
+    static boolean application = false;
     private FirebaseFirestore firestore;
     Drawable bottom_selected;
     @Override
@@ -49,7 +50,12 @@ public class MainActivityRecruiter extends AppCompatActivity {
         ApplicationsFragment applicationsFragment = new ApplicationsFragment();
         Recruiter_Settings_fragment recruiterSettingsFragment = new Recruiter_Settings_fragment();
         TestFragment_recruiter testFragment = new TestFragment_recruiter();
+
         setFragment(home_recruiter,homelayout);
+        if(application){
+            setFragment(applicationsFragment,applicationslayout);
+            application = false;
+        }
         scrollView.scrollTo(0,1);
 
 

@@ -8,6 +8,7 @@ import android.os.Looper;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.OnBackPressedCallback;
@@ -28,8 +29,10 @@ public class loginPage extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private EditText emailLogin, passwordLogin;
     private Button login_button, login_signup_button;
+
     ProgressBar progressBar;
     ConstraintLayout login_layout;
+    TextView forgot;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -44,6 +47,8 @@ public class loginPage extends AppCompatActivity {
         login_layout = findViewById(R.id.constraintLayoutLogin);
         progressBar = findViewById(R.id.progressBarLogin);
         login_signup_button = findViewById(R.id.login_signup_button);
+        forgot = findViewById(R.id.forgot);
+
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         setProgressBar();
 //        Handler handler = new Handler(Looper.getMainLooper());
@@ -62,7 +67,10 @@ public class loginPage extends AppCompatActivity {
             Intent intent = new Intent(loginPage.this, signUp_page.class);
             startActivity(intent);
         });
-
+        forgot.setOnClickListener(v -> {
+            Intent intent = new Intent(loginPage.this, ForgotPassword.class);
+            startActivity(intent);
+        });
         login_button.setOnClickListener(v -> {
             loginUser();
         });

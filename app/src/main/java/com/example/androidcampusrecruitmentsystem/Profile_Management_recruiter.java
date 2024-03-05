@@ -40,6 +40,7 @@ import java.util.Objects;
 public class Profile_Management_recruiter extends AppCompatActivity {
     private ImageView backbutton;
     private EditText nameEditText, phoneNumberEditText;
+    Button changePassword;
     TextView dobEditText;
     Button updateButton;
     private FirebaseFirestore firestore;
@@ -71,6 +72,7 @@ public class Profile_Management_recruiter extends AppCompatActivity {
         dobEditText = findViewById(R.id.dobEditText_recruiter);
         phoneNumberEditText = findViewById(R.id.phoneNumberEditText_recruiter);
         updateButton = findViewById(R.id.Save_changes_recruiter);
+        changePassword = findViewById(R.id.Reset_password_recruiter);
         profilePic = findViewById(R.id.imageView_profile_recruiter);
         setProgressBar();
         Handler handler = new Handler(Looper.getMainLooper());
@@ -83,6 +85,12 @@ public class Profile_Management_recruiter extends AppCompatActivity {
                 startActivity(intent);
             }
         };
+        changePassword.setOnClickListener(v -> {
+            ForgotPassword.change = true;
+            ForgotPassword.recruiter = true;
+            Intent intent = new Intent(Profile_Management_recruiter.this, ForgotPassword.class);
+            startActivity(intent);
+        });
         getOnBackPressedDispatcher().addCallback(this, callback);
         // Back button click listener
         backbutton.setOnClickListener(v -> {
@@ -276,6 +284,7 @@ public class Profile_Management_recruiter extends AppCompatActivity {
         nameEditText.setEnabled(false);
         phoneNumberEditText.setEnabled(false);
         constraintLayout.setAlpha(0.5f);
+        changePassword.setEnabled(false);
 
     }
 
@@ -286,6 +295,8 @@ public class Profile_Management_recruiter extends AppCompatActivity {
         dobEditText.setEnabled(true);
         nameEditText.setEnabled(true);
         phoneNumberEditText.setEnabled(true);
+        changePassword.setEnabled(true);
+
         constraintLayout.setAlpha(1f);
     }
 
