@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         };
         getOnBackPressedDispatcher().addCallback(this, callback);
         Homefragment homefragment = new Homefragment();
-        MailFragment mailFragment = new MailFragment();
+        mailStudentFragment mailFragment = new mailStudentFragment();
         RecentFragment recentFragment = new RecentFragment();
         SettingsFragment settingsFragment = new SettingsFragment();
         TestFragment testFragment = new TestFragment();

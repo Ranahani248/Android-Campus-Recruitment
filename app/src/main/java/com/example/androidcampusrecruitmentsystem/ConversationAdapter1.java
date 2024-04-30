@@ -1,4 +1,5 @@
 package com.example.androidcampusrecruitmentsystem;
+
 import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,21 +16,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.List;
 
-public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapter.ViewHolder> {
-    private List<String> studentIds;
+public class ConversationAdapter1 extends RecyclerView.Adapter<ConversationAdapter1.ViewHolder> {
+    private List<String> recruiterIds;
     private FirebaseFirestore firestore;
 
-    public ConversationAdapter(List<String> studentIds) {
-        this.studentIds = studentIds;
+    public ConversationAdapter1(List<String> recruiterIds) {
+        this.recruiterIds = recruiterIds;
         firestore = FirebaseFirestore.getInstance();
     }
 
     // Method to update the data set
-// Modify updateData() method
-    public void updateData(List<String> studentIds) {
-        this.studentIds.clear();
-        this.studentIds.addAll(studentIds);
-        notifyDataSetChanged();
+    public void updateData(List<String> recruiterIds) {
+        this.recruiterIds.clear(); // Clear existing data
+        this.recruiterIds.addAll(recruiterIds); // Add new data
+        notifyDataSetChanged(); // Notify RecyclerView that data set has changed
     }
 
     @NonNull
@@ -38,33 +38,34 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.conversation_cards, parent, false);
         return new ViewHolder(view);
     }
+
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        // Get the student ID at the current position
-        String studentId = studentIds.get(position);
+        // Get the recruiter ID at the current position
+        String recruiterId = recruiterIds.get(position);
 
-
-        firestore.collection("Students").document(studentId).get()
+        // Fetch recruiter details from Firestore using recruiterId
+        firestore.collection("Recruiters").document(recruiterId).get()
                 .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                         if (task.isSuccessful()) {
                             DocumentSnapshot document = task.getResult();
                             if (document.exists()) {
-                                // Get student details
-                                String studentName = document.getString("name");
-                                String studentEmail = document.getString("email");
+                                // Get recruiter details
+                                String recruiterName = document.getString("name");
+                                String recruiterEmail = document.getString("email");
 
-                                // Set student details in the ViewHolder
-                                holder.ConversationUser.setText(studentName);
-                                holder.ConversationEmail.setText(studentEmail);
+                                // Set recruiter details in the ViewHolder
+                                holder.ConversationUser.setText(recruiterName);
+                                holder.ConversationEmail.setText(recruiterEmail);
 
                                 // Set onClickListener for the item
                                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                                     @Override
                                     public void onClick(View view) {
                                         // Open ChatActivity when item is clicked
-                                        holder.openChatActivity(studentId, studentName, studentEmail);
+                                        holder.openChatActivity(recruiterId, recruiterName, recruiterEmail);
                                     }
                                 });
                             }
@@ -72,23 +73,27 @@ public class ConversationAdapter extends RecyclerView.Adapter<ConversationAdapte
                     }
                 });
     }
+
     @Override
     public int getItemCount() {
-        return studentIds.size();
+        return recruiterIds.size();
     }
+
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView ConversationUser;
         TextView ConversationEmail;
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ConversationUser = itemView.findViewById(R.id.user_name);
             ConversationEmail = itemView.findViewById(R.id.msgtext);
         }
-        public void openChatActivity(String studentId, String studentName, String studentEmail) {
-            Intent intent = new Intent(itemView.getContext(), ChatActivity.class);
-            intent.putExtra("studentId", studentId);
-            intent.putExtra("studentName", studentName);
-            intent.putExtra("studentEmail", studentEmail);
+
+        public void openChatActivity(String recruiterId, String recruiterName, String recruiterEmail) {
+            Intent intent = new Intent(itemView.getContext(), RecuterChatActity.class);
+            intent.putExtra("recruiterId", recruiterId);
+            intent.putExtra("recruiterName", recruiterName);
+            intent.putExtra("recruiterEmail", recruiterEmail);
             itemView.getContext().startActivity(intent);
         }
     }

@@ -14,4 +14,8 @@
         <!-- Customize the track (the background of the switch) color -->
         <item name="android:trackTint">#8F8E8E</item>
     </style>
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
 </resources>

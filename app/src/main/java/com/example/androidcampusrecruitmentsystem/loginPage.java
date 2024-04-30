@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.text.TextUtils;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
@@ -18,21 +20,26 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.auth.SignInMethodQueryResult;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.Objects;
 
 public class loginPage extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
     private EditText emailLogin, passwordLogin;
-    private Button login_button, login_signup_button;
+    private Button login_button, login_signup_button ;
 
     ProgressBar progressBar;
-    ConstraintLayout login_layout;
-    TextView forgot;
+    ConstraintLayout login_layout ;
+    TextView forgot ;
     private SharedPreferences sharedPreferences;
 
     @Override
@@ -48,6 +55,7 @@ public class loginPage extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBarLogin);
         login_signup_button = findViewById(R.id.login_signup_button);
         forgot = findViewById(R.id.forgot);
+
 
         sharedPreferences = getSharedPreferences("loginPrefs", Context.MODE_PRIVATE);
         setProgressBar();
@@ -68,8 +76,21 @@ public class loginPage extends AppCompatActivity {
             startActivity(intent);
         });
         forgot.setOnClickListener(v -> {
-            Intent intent = new Intent(loginPage.this, ForgotPassword.class);
-            startActivity(intent);
+            String email = emailLogin.getText().toString();
+            if(TextUtils.isEmpty(email)) {
+                emailLogin.setError("Enter your email");
+                emailLogin.requestFocus();
+                return;
+            }
+            FirebaseAuth.getInstance().sendPasswordResetEmail(email)
+                    .addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+
+                            Toast.makeText(loginPage.this, "Link sent to Email if it is Registered with us", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(loginPage.this, "Failed to send link", Toast.LENGTH_SHORT).show();
+                        }
+                    });
         });
         login_button.setOnClickListener(v -> {
             loginUser();
@@ -93,7 +114,18 @@ public class loginPage extends AppCompatActivity {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task) {
                     if (task.isSuccessful()) {
-                        checkUserRole();
+                        FirebaseUser user = mAuth.getCurrentUser();
+                        if (user != null && user.isEmailVerified()) {
+                            checkUserRole();
+                        } else {
+                            resetProgressBar();
+                            Toast.makeText(loginPage.this, "Email is not verified. Please verify your email.", Toast.LENGTH_SHORT).show();
+                            if (user != null) {
+                                user.sendEmailVerification();
+                                Toast.makeText(loginPage.this, "Verification email sent to " + user.getEmail(), Toast.LENGTH_SHORT).show();
+                            }
+                            mAuth.signOut();
+                        }
                     } else {
                         resetProgressBar();
                         Toast.makeText(loginPage.this, "Login Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
@@ -125,6 +157,7 @@ public class loginPage extends AppCompatActivity {
                                         // Redirect to recruiter activity
                                         navigateToMainActivity();
                                     } else {
+                                        resetProgressBar();
                                         // Handle cases where the user is not found in either collection
                                         Toast.makeText(loginPage.this, "Unknown user role", Toast.LENGTH_SHORT).show();
                                     }
@@ -134,7 +167,6 @@ public class loginPage extends AppCompatActivity {
     }
 
     private void setLoggedIn(boolean loggedIn) {
-        // Save the login state in SharedPreferences
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putBoolean("loggedIn", loggedIn);
         editor.apply();
@@ -142,13 +174,14 @@ public class loginPage extends AppCompatActivity {
 
     private void navigateToMainActivity() {
         if (mAuth.getCurrentUser() != null) {
+            FirebaseUser user = mAuth.getCurrentUser();
+if(user.isEmailVerified()) {
             String userId = mAuth.getCurrentUser().getUid();
 
             FirebaseFirestore.getInstance().collection("Students").document(userId)
                     .get()
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful() && task.getResult().exists()) {
-                            // User is a student
 
                             Intent intent = new Intent(loginPage.this, MainActivity.class);
                             startActivityForResult(intent, MainActivity.REQUEST_CODE);
@@ -170,6 +203,8 @@ public class loginPage extends AppCompatActivity {
                         }
                     });
         }
+else {resetProgressBar();}
+        }
     }
 
     @Override
@@ -186,7 +221,7 @@ public class loginPage extends AppCompatActivity {
         login_button.setEnabled(false);
         emailLogin.setEnabled(false);
         passwordLogin.setEnabled(false);
-     login_layout.setAlpha(0.5f);
+        login_layout.setAlpha(0.5f);
 
  }
  public  void  resetProgressBar(){
@@ -196,7 +231,7 @@ public class loginPage extends AppCompatActivity {
      emailLogin.setEnabled(true);
      passwordLogin.setEnabled(true);
      login_layout.setAlpha(1f);
-
  }
+
 
 }

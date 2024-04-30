@@ -3,6 +3,7 @@ package com.example.androidcampusrecruitmentsystem;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -27,6 +28,8 @@ public class ApplicationDetails extends AppCompatActivity {
     ImageView studentImage, imageOpen;
     ProgressBar appDetailsProgress;
     boolean imagePresent = false;
+
+    String jobId;
     ConstraintLayout constraintLayout;
     FirebaseFirestore firestore;
 
@@ -37,7 +40,9 @@ public class ApplicationDetails extends AppCompatActivity {
 
         // Initialize Firestore
         firestore = FirebaseFirestore.getInstance();
-
+        Intent intent = getIntent();
+        jobId = intent.getStringExtra("jobId");
+checkIfTestScheduled();
         // Initialize views
         studentNameTextView = findViewById(R.id.Student_name_application_details);
         studentContactTextView = findViewById(R.id.Student_contact_application_details);
@@ -47,6 +52,7 @@ public class ApplicationDetails extends AppCompatActivity {
         constraintLayout = findViewById(R.id.constraintAppliDetails);
         sendMessageButton = findViewById(R.id.sendMessage);
         scheduleTestButton = findViewById(R.id.testSchedule);
+        scheduleTestButton.setEnabled(false);
         scheduleInterviewButton = findViewById(R.id.interviewSchedule);
         imageOpen = findViewById(R.id.imageOpen);
         load(true);
@@ -87,6 +93,35 @@ public class ApplicationDetails extends AppCompatActivity {
                 }
             }
         });
+        sendMessageButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Retrieve current user details
+                firestore.collection("Students").document(studentId).get()
+                        .addOnSuccessListener(documentSnapshot -> {
+                            if (documentSnapshot.exists()) {
+                                String studentName = documentSnapshot.getString("name");
+                                String studentContact = documentSnapshot.getString("email");
+                                String studentId = documentSnapshot.getId();
+
+                                // Pass user details to the message activity
+                                Intent messageIntent = new Intent(ApplicationDetails.this, ChatActivity.class);
+                                messageIntent.putExtra("studentName", studentName);
+                                messageIntent.putExtra("studentId", studentId);
+                                messageIntent.putExtra("studentContact", studentContact);
+
+
+                                // Start the message activity
+                                startActivity(messageIntent);
+                            } else {
+                                Toast.makeText(ApplicationDetails.this, "Student not found", Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(ApplicationDetails.this, "Error", Toast.LENGTH_SHORT).show();
+                        });
+            }
+        });
         imageOpen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +132,17 @@ public class ApplicationDetails extends AppCompatActivity {
                 scheduleTestButton.setEnabled(true);
                 scheduleInterviewButton.setEnabled(true);
                 sendMessageButton.setEnabled(true);
+            }
+        });
+        scheduleTestButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ApplicationDetails.this, ScheduleTestRecruiter.class);
+                intent.putExtra("studentId", studentId);
+                intent.putExtra("jobId", jobId);
+
+
+                startActivity(intent);
             }
         });
         downloadCvButton.setOnClickListener(new View.OnClickListener() {
@@ -173,5 +219,26 @@ public class ApplicationDetails extends AppCompatActivity {
             sendMessageButton.setEnabled(true);
         }
 
+    }
+    private void checkIfTestScheduled() {
+        firestore.collection("test")
+                .whereEqualTo("jobId", jobId)
+                .whereEqualTo("studentID", studentId)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // If a test document exists, disable the test schedule button
+                    if (!queryDocumentSnapshots.isEmpty()) {
+                        scheduleTestButton.setEnabled(false);
+                        scheduleTestButton.setText("Test Scheduled");
+                    }
+                    else {
+                        scheduleTestButton.setEnabled(true);
+                        scheduleTestButton.setText("Schedule Test");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure if any
+                    Log.e("Firestore", "Error checking for existing test documents: " + e.getMessage());
+                });
     }
 }

@@ -91,9 +91,9 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
                 } else {
                     fetchJobList();
                 }
-                return true; // Consume the event
+                return true;
             }
-            return false; // Let other listeners handle the event
+            return false;
         });
 
 
@@ -166,11 +166,8 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
         super.onViewCreated(view, savedInstanceState);
 
 
-
-
-
-
     }
+
     void fetchJobList() {
         if (!isAdded()) {
             return;
@@ -251,6 +248,5 @@ public class Homefragment extends Fragment implements JobAdapter.OnItemClickList
             Intent intent = new Intent(getContext(), Job_Details_student.class);
             Job_Details_student.backRecent = false;
             startActivity(intent);
-
     }
 }

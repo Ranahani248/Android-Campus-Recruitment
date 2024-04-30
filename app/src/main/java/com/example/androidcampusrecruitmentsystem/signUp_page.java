@@ -46,18 +46,13 @@ public class signUp_page extends AppCompatActivity {
         signup_recruiter_button = findViewById(R.id.signup_recruiter_button);
         progressBar = findViewById(R.id.signup_progress);
         signup_layout = findViewById(R.id.ConstraintSignup);
+
+
         signup_login_button.setOnClickListener(v -> {
             Intent intent = new Intent(signUp_page.this, loginPage.class);
             startActivity(intent);
         });
 
-//        FirebaseFirestore db = FirebaseFirestore.getInstance();
-//        DocumentReference docRef = db.collection("Students").document("user");
-//
-//        Map<String, Object> data = new HashMap<>();
-//        data.put("first", "Ada");
-//        data.put("last", "Lovelace");
-//        data.put("born", 1818);
 
         mAuth = FirebaseAuth.getInstance();
         signup_student_button = findViewById(R.id.signup_student_button);
@@ -69,16 +64,6 @@ public class signUp_page extends AppCompatActivity {
             setProgressBar(true);
             createUser("Recruiter");
         });
-
-//            docRef.set(data).addOnSuccessListener(aVoid -> {
-//                Toast.makeText(this, "updated", Toast.LENGTH_SHORT).show();
-//            }).addOnFailureListener(e -> {
-//                Toast.makeText(this, "Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
-//            });
-
-
-
-
 
 
 
@@ -122,15 +107,10 @@ public class signUp_page extends AppCompatActivity {
                                 .set(userMap)
                                 .addOnSuccessListener(documentReference -> {
                                     Toast.makeText(signUp_page.this, "Signed up as recruiter", Toast.LENGTH_SHORT).show();
-                                    // Redirect to the RecruiterActivity
                                     setProgressBar(false);
-
-                                    startActivity(new Intent(signUp_page.this, Profile_Management_recruiter.class));
-                                    finish(); // Close the current activity
                                 })
                                 .addOnFailureListener(e -> {
                                     setProgressBar(false);
-
                                     Toast.makeText(signUp_page.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
                     }
@@ -139,11 +119,8 @@ public class signUp_page extends AppCompatActivity {
                                 .set(userMap)
                                 .addOnSuccessListener(documentReference -> {
                                     Toast.makeText(signUp_page.this, "Signed Up as student", Toast.LENGTH_SHORT).show();
-                                    // Redirect to the StudentActivity
                                     setProgressBar(false);
 
-                                    startActivity(new Intent(signUp_page.this, Profile_Management.class));
-                                    finish(); // Close the current activity
                                 })
                                 .addOnFailureListener(e -> {
                                     setProgressBar(false);
@@ -151,6 +128,8 @@ public class signUp_page extends AppCompatActivity {
                                     Toast.makeText(signUp_page.this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                                 });
                     }
+                    Intent intent = new Intent(signUp_page.this, loginPage.class);
+                    startActivity(intent);
 
                 } else {
                     setProgressBar(false);

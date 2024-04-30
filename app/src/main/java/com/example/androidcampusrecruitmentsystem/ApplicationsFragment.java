@@ -72,11 +72,11 @@ public class ApplicationsFragment extends Fragment implements ApplicationsAdapte
                         if (task.isSuccessful()) {
                             applicationList.clear(); // Clear existing data
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                String jobId = document.getId();
+                                String jobId = document.getString("jobId");
                                 String jobTitle = document.getString("Title");
                                 String studentId = document.getString("studentId");
 
-                                fetchStudentName(studentId, jobTitle);
+                                fetchStudentName(studentId, jobTitle, jobId);
                             }
 
 
@@ -95,14 +95,14 @@ public class ApplicationsFragment extends Fragment implements ApplicationsAdapte
         }
 
     }
-    private void fetchStudentName(String studentId, String jobTitle) {
+    private void fetchStudentName(String studentId, String jobTitle, String jobid) {
         firestore.collection("Students").document(studentId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String studentName = documentSnapshot.getString("name");
                         String profilePictureUrl = documentSnapshot.getString("profilePicture");
                         noapp.setVisibility(View.GONE);
-                        applicationList.add(new Application(jobTitle, studentName, profilePictureUrl,studentId));
+                        applicationList.add(new Application(jobTitle, studentName, profilePictureUrl,studentId,jobid));
                         applicationsAdapter.notifyDataSetChanged();
                     }
                     if(applicationList.isEmpty()){
@@ -117,6 +117,7 @@ public class ApplicationsFragment extends Fragment implements ApplicationsAdapte
     public void onItemClicked(Application application) {
         ApplicationDetails.studentId = application.getStudentId();
         Intent intent = new Intent(getContext(), ApplicationDetails.class);
+        intent.putExtra("jobId", application.getJobid());
         startActivity(intent);
     }
 }

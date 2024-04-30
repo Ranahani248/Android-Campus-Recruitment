@@ -31,10 +31,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -89,9 +87,8 @@ public class Profile_Management extends AppCompatActivity {
         getOnBackPressedDispatcher().addCallback(this, callback);
 
         changePassword.setOnClickListener(v -> {
-            ForgotPassword.recruiter = false;
-            ForgotPassword.change = true;
-            Intent intent = new Intent(Profile_Management.this, ForgotPassword.class);
+            ResetPassword.recruiter = false;
+            Intent intent = new Intent(Profile_Management.this, ResetPassword.class);
             startActivity(intent);
         });
         // Back button click listener

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/input_bg"
+    android:backgroundTint="#5279FF"
+    android:paddingBottom="15dp"
+    android:layout_margin="10dp">
+
+    <LinearLayout
+        android:id="@+id/linearlayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:layout_editor_absoluteX="15dp">
+
+        <TextView
+            android:id="@+id/mcq_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_bg"
+            android:backgroundTint="#FBFBFB"
+            android:padding="10dp"
+            android:layout_weight="1"
+            android:text="Question No."
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_marginEnd="5dp"
+
+            />
+        <ImageView
+            android:id="@+id/mcq_Edit"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:background="@drawable/button_bg"
+            android:paddingHorizontal="15dp"
+            android:src="@drawable/edit_icon"
+            android:layout_marginHorizontal="5dp"
+           />
+        <ImageView
+            android:id="@+id/mcq_delete"
+            android:layout_width="60dp"
+            android:layout_height="50dp"
+            android:src="@drawable/delete_icon"
+            android:background="@drawable/button_bg"
+            android:paddingHorizontal="20dp"
+            android:layout_marginHorizontal="5dp"
+           />
+
+
+    </LinearLayout>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:id="@+id/detailsLayout"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/linearlayout">
+
+        <EditText
+            android:id="@+id/mcq_question"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/input_bg"
+            android:backgroundTint="#FBFBFB"
+            android:hint="Question"
+            android:padding="10dp"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    <LinearLayout
+        android:id="@+id/linearlayout1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/mcq_question">
+    <EditText
+        android:id="@+id/mcq_option1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:hint="Option 1"
+        android:layout_marginHorizontal="5dp"
+        android:padding="10dp"
+        android:background="@drawable/input_bg"
+        android:backgroundTint="#FBFBFB"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        />
+        <EditText
+            android:id="@+id/mcq_option2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="5dp"
+            android:hint="Option 2"
+            android:padding="10dp"
+            android:background="@drawable/input_bg"
+            android:backgroundTint="#FBFBFB"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            />
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/linearlayout2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@id/linearlayout1">
+        <EditText
+            android:id="@+id/mcq_option3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:hint="Option 3"
+            android:layout_marginHorizontal="5dp"
+            android:padding="10dp"
+            android:background="@drawable/input_bg"
+            android:backgroundTint="#FBFBFB"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            />
+        <EditText
+            android:id="@+id/mcq_option4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_marginHorizontal="5dp"
+            android:hint="Option 4"
+            android:padding="10dp"
+            android:background="@drawable/input_bg"
+            android:backgroundTint="#FBFBFB"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            />
+    </LinearLayout>
+
+    <androidx.appcompat.widget.AppCompatButton
+        android:id="@+id/mcq_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginVertical="15dp"
+        android:background="@drawable/button_bg"
+        android:paddingVertical="15dp"
+        android:paddingHorizontal="40dp"
+        android:text="Save"
+        android:textColor="@color/white"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/linearlayout2" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

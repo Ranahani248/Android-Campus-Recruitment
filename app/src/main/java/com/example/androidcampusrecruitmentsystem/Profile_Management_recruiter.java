@@ -3,7 +3,6 @@ package com.example.androidcampusrecruitmentsystem;
 import static com.example.androidcampusrecruitmentsystem.MainActivityRecruiter.recruiter;
 
 import androidx.activity.OnBackPressedCallback;
-import androidx.activity.OnBackPressedDispatcher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
@@ -86,9 +85,8 @@ public class Profile_Management_recruiter extends AppCompatActivity {
             }
         };
         changePassword.setOnClickListener(v -> {
-            ForgotPassword.change = true;
-            ForgotPassword.recruiter = true;
-            Intent intent = new Intent(Profile_Management_recruiter.this, ForgotPassword.class);
+            ResetPassword.recruiter = true;
+            Intent intent = new Intent(Profile_Management_recruiter.this, ResetPassword.class);
             startActivity(intent);
         });
         getOnBackPressedDispatcher().addCallback(this, callback);

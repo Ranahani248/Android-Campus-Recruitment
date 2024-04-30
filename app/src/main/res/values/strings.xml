@@ -2,4 +2,6 @@
     <string name="app_name">Android Campus Recruitment System</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="message_hint_text">Message</string>
+    <string name="send_message_button">send message button</string>
 </resources>

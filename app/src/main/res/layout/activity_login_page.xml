@@ -9,6 +9,7 @@
 
     <ScrollView
 
+        android:id="@+id/scrollView5"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -19,8 +20,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintLayoutLogin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <TextView
                 android:id="@+id/textView"
@@ -116,6 +116,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="75dp"
                 android:layout_marginTop="30dp"
+                android:layout_marginBottom="40dp"
                 android:background="@drawable/button_bg"
                 android:elevation="20dp"
                 android:padding="16dp"
@@ -123,11 +124,8 @@
                 android:text="New User? Sign Up"
                 android:textColor="#FCFAFA"
                 android:textSize="20sp"
-                android:layout_marginBottom="40dp"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/login_button"
-                 />
-
+                app:layout_constraintTop_toBottomOf="@+id/login_button" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -143,5 +141,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

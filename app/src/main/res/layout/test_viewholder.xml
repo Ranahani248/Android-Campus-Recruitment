@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/test_viewHolder"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -16,14 +17,16 @@
     >
     <TextView
         android:id="@+id/testTitle"
-        android:layout_width="45dp"
+        android:layout_width="wrap_content"
         android:textColor="@color/black"
         android:layout_height="wrap_content"
         android:textStyle="bold"
-        android:text="Title: " />
+        android:text="Job Title: " />
     <TextView
+        android:id="@+id/title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:textColor="@color/black"
         />
 </LinearLayout>
     <LinearLayout
@@ -31,17 +34,20 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:layout_marginVertical="5dp"
+
         >
     <TextView
         android:id="@+id/testDate"
-        android:layout_width="45dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:text="Date: "
+        android:text="Valid till: "
         android:textStyle="bold" />
         <TextView
+            android:id="@+id/end_date"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             />
     </LinearLayout>
     <LinearLayout
@@ -51,15 +57,18 @@
         android:layout_marginVertical="5dp"
         >
     <TextView
-        android:id="@+id/testName"
-        android:layout_width="45dp"
-        android:textColor="@color/black"
+        android:id="@+id/Student_Name"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
+        android:textColor="@color/black"
         android:textStyle="bold"
         android:text="Name: " />
         <TextView
+            android:id="@+id/Student_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:textColor="@color/black"
             />
     </LinearLayout>
 
