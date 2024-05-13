@@ -1,5 +1,4 @@
 package com.example.androidcampusrecruitmentsystem;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -26,7 +25,8 @@ public class ConnectingActivity extends AppCompatActivity {
     private FirebaseFirestore firestore;
     private boolean isOkay = false;
     private String username;
-    private String incoming1, outgoing;
+    String studentId;
+    private String incoming1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +84,7 @@ public class ConnectingActivity extends AppCompatActivity {
                 // Permissions granted, proceed with your logic
                 performLogic();
             } else {
-                requestPermissions();
+                // Permissions not granted, handle accordingly (e.g., show a message or exit)
                 Log.e("ConnectingActivity", "Required permissions not granted");
                 finish();
             }
@@ -94,76 +94,65 @@ public class ConnectingActivity extends AppCompatActivity {
     // Your logic after permissions are granted
     private void performLogic() {
         // Retrieve intent extras
-        username = getIntent().getStringExtra("createdBy");
-        incoming1 = getIntent().getStringExtra("incoming");
-        outgoing = getIntent().getStringExtra("outgoing");
-
+        username = getIntent().getStringExtra("recruiterId");
+        incoming1 = getIntent().getStringExtra("studentId");
+        studentId = getIntent().getStringExtra("studentID");
 
         // Perform Firestore operation
         firestore.collection("rooms")
-                .get().addOnSuccessListener((queryDocumentSnapshots )-> {
-
-                    assert queryDocumentSnapshots != null;
+                .whereEqualTo("isAvailable", true)
+                .limit(1)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (!queryDocumentSnapshots.isEmpty()) {
-                        for(DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                           if(documentSnapshot.getString("outgoing").equals(incoming1) && documentSnapshot.getString("incoming").equals(outgoing)) {
-                               Log.d("ConnectingActivity", "Room found: "+ incoming1 + " " + outgoing);
-                               String roomId = documentSnapshot.getId();
-                               Map<String, Object> updateData = new HashMap<>();
-                               updateData.put("status", 1);
+                        // Room Available
+                        DocumentSnapshot documentSnapshot = queryDocumentSnapshots.getDocuments().get(0);
+                        String roomId = documentSnapshot.getId();
+                        // Update room with user details
+                        Map<String, Object> updateData = new HashMap<>();
+                        updateData.put("incoming", incoming1);
+                        updateData.put("status", 1);
 
-                               firestore.collection("rooms").document(roomId)
-                                       .update(updateData)
-                                       .addOnSuccessListener(aVoid -> {
-                                           // Start call activity
-                                           Intent intent = new Intent(ConnectingActivity.this, CallActivity.class);
-                                           intent.putExtra("createdBy", outgoing);
-                                           intent.putExtra("incoming", incoming1);
-                                           intent.putExtra("roomId", roomId);
-                                           startActivity(intent);
-                                           finish();
-                                       })
-                                       .addOnFailureListener(e -> {
-                                           // Handle failure
-                                           Log.e("ConnectingActivity", "Error updating room: " + e.getMessage());
-                                       });
-                               return;
-                           }
-                        }
-
-
-
+                        firestore.collection("rooms").document(roomId)
+                                .update(updateData)
+                                .addOnSuccessListener(aVoid -> {
+                                    // Start call activity
+                                    Intent intent = new Intent(ConnectingActivity.this, CallActivity.class);
+                                    intent.putExtra("createdBy", username);
+                                    intent.putExtra("studentId", incoming1);
+                                    intent.putExtra("roomId", roomId);
+                                    startActivity(intent);
+                                    finish();
+                                })
+                                .addOnFailureListener(e -> {
+                                    // Handle failure
+                                    Log.e("ConnectingActivity", "Error updating room: " + e.getMessage());
+                                });
                     } else {
                         // Room Not Available
                         Map<String, Object> room = new HashMap<>();
                         room.put("incoming", incoming1);
                         room.put("createdBy", username);
-                        room.put("outgoing", outgoing);
                         room.put("isAvailable", true);
+                        room.put("studentID",studentId);
                         room.put("status", 0);
 
                         firestore.collection("rooms")
                                 .add(room)
                                 .addOnSuccessListener(documentReference -> {
-                                    documentReference.addSnapshotListener((snapshot, error1) -> {
+                                    documentReference.addSnapshotListener((snapshot, error) -> {
                                         if (snapshot != null && snapshot.exists()) {
-                                            if (snapshot.contains("status")) {
-                                                Long status = snapshot.getLong("status");
-                                                if (status != null) {
-                                                    if (status == 1) {
-                                                        if (!isOkay) {
-                                                            isOkay = true;
-                                                            Intent intent = new Intent(ConnectingActivity.this, CallActivity.class);
-                                                            intent.putExtra("createdBy", outgoing);
-                                                            intent.putExtra("studentId", incoming1);
-                                                            intent.putExtra("roomId", documentReference.getId());
-                                                            startActivity(intent);
-                                                            finish();
-                                                        }
-                                                    } else {
-                                                        // Other user hasn't accepted yet, do nothing or handle appropriately
-                                                    }
-                                                }
+                                            if (snapshot.contains("status") && snapshot.getLong("status") == 1) {
+                                                if (isOkay) return;
+
+                                                isOkay = true;
+                                                // Start call activity
+                                                Intent intent = new Intent(ConnectingActivity.this, CallActivity.class);
+                                                intent.putExtra("createdBy", username);
+                                                intent.putExtra("studentId", incoming1);
+                                                intent.putExtra("roomId", documentReference.getId());
+                                                startActivity(intent);
+                                                finish();
                                             }
                                         }
                                     });
@@ -173,7 +162,10 @@ public class ConnectingActivity extends AppCompatActivity {
                                     Log.e("ConnectingActivity", "Error creating room: " + e.getMessage());
                                 });
                     }
+                })
+                .addOnFailureListener(e -> {
+                    // Handle failure
+                    Log.e("ConnectingActivity", "Error fetching rooms: " + e.getMessage());
                 });
-
     }
 }

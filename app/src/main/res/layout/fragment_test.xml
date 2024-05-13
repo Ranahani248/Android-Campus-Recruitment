@@ -93,14 +93,14 @@
                 android:gravity="center"
                 android:layout_marginTop="20dp"
                 android:visibility="gone"
-                android:text="No Interviews Scheduled"
+                android:text="No Interview Offers"
                 android:textColor="@color/black"
                 android:textSize="17sp"
                 />
 
 
             <ProgressBar
-                android:id="@+id/progressBarSaved"
+                android:id="@+id/progressBaroffers"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

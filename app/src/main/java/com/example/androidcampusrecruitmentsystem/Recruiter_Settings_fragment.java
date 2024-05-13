@@ -28,7 +28,6 @@ public class Recruiter_Settings_fragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ;
 
     }
 

@@ -4,6 +4,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
@@ -36,7 +39,9 @@ public class TestFragment extends Fragment {
     List<FeedbackITem> feedbackItemList = new ArrayList<>();
     List<InterviewItem> interviewItemList = new ArrayList<>();
     private FirebaseFirestore firestore;
-    ConstraintLayout test_layoutStudent;
+    ConstraintLayout test_layoutStudent,interviewLayout_recruiter,schduleInterview_layout,feedbackLayout_student;
+    ProgressBar progressBarfeedback,progressBarschedule,progressBaroffers,progressBarTestStudent;
+    TextView noTest_student,noInterview_student,noInterviewschedule_student,noFeedback_student;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -51,9 +56,30 @@ public class TestFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_test, container, false);
         test_recyclerView = view.findViewById(R.id.testRecycle_student);
         testAdapter = new TestListAdapterStudent(testItemList, test_recyclerView, this);
-        test_layoutStudent = view.findViewById(R.id.test_layoutStudent);
         interview_recyclerView = view.findViewById(R.id.interviewRecycle);
         feedback_recyclerView = view.findViewById(R.id.feedback_recycle);
+
+
+
+
+        feedbackLayout_student = view.findViewById(R.id.feedbackLayout_student);
+        progressBarfeedback = view.findViewById(R.id.progressBarfeedback);
+        noFeedback_student = view.findViewById(R.id.noFeedback_student);
+
+        schduleInterview_layout = view.findViewById(R.id.schduleInterview_layout);
+        progressBarschedule = view.findViewById(R.id.progressBarschedule);
+        noInterviewschedule_student = view.findViewById(R.id.noInterviewschedule_student);
+
+        test_layoutStudent = view.findViewById(R.id.test_layoutStudent);
+        progressBarTestStudent = view.findViewById(R.id.progressBarTestStudent);
+        noTest_student = view.findViewById(R.id.noTest_student);
+
+        interviewLayout_recruiter = view.findViewById(R.id.interviewLayout_recruiter);
+        progressBaroffers = view.findViewById(R.id.progressBaroffers);
+        noInterview_student = view.findViewById(R.id.noInterview_student);
+
+
+
         scheduledInterviews_recyclerView = view.findViewById(R.id.schduleInterview_recycle);
         interviewList = new ArrayList<>();
 
@@ -62,7 +88,7 @@ public class TestFragment extends Fragment {
         scheduledInterviews_recyclerView.setAdapter(scheduleInterviewAdapter);
 
 
-
+        interviewLayout_recruiter.setVisibility(View.GONE);
         interviewAdapter = new InterviewAdapter(interviewItemList, interview_recyclerView, this);
         interview_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         interview_recyclerView.setAdapter(interviewAdapter);
@@ -71,6 +97,7 @@ public class TestFragment extends Fragment {
         feedback_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         feedback_recyclerView.setAdapter(feedbackAdapter);
 
+        feedbackLayout_student.setVisibility(View.GONE);
         test_layoutStudent.setVisibility(View.GONE);
         test_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         test_recyclerView.setAdapter(testAdapter);
@@ -78,12 +105,17 @@ public class TestFragment extends Fragment {
         loadTests();
         loadInterviews();
         loadFeedbacks();
+
         return view;
     }
     public void loadScheduledInterviews() {
+        schduleInterview_layout.setVisibility(View.VISIBLE);
+        progressBarschedule.setVisibility(View.VISIBLE);
+        noInterviewschedule_student.setVisibility(View.GONE);
         firestore.collection("Interviews").get().addOnSuccessListener(queryDocumentSnapshots -> {
             interviewList.clear();
             for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+
                 if(documentSnapshot.getString("studentID").equals(getCurrentUserId())) {
                     String interviewId = documentSnapshot.getId();
                     String startDate = documentSnapshot.getString("scheduleDate");
@@ -96,6 +128,10 @@ public class TestFragment extends Fragment {
                 }
             }
         });
+        if(interviewList.size() == 0){
+            progressBarschedule.setVisibility(View.GONE);
+            noInterviewschedule_student.setVisibility(View.VISIBLE);
+        }
     }
         public void getScheduleInterviewJob(String jobId, SheduledInterviewItem scheduledInterviewItem, String recruiterID) {
             firestore.collection("Jobs").document(jobId).get().addOnSuccessListener(documentSnapshot -> {
@@ -113,16 +149,30 @@ public class TestFragment extends Fragment {
                 String recruiterName = documentSnapshot.getString("name");
                 scheduledInterviewItem.setRecruiterName(recruiterName);
                 interviewList.add(scheduledInterviewItem);
+                schduleInterview_layout.setVisibility(View.GONE);
+
                 scheduleInterviewAdapter.notifyDataSetChanged();
             }).addOnFailureListener(e -> {
                 interviewList.add(scheduledInterviewItem);
+                schduleInterview_layout.setVisibility(View.GONE);
+
                 scheduleInterviewAdapter.notifyDataSetChanged();
             });
+
+
+
         }
     public void loadInterviews() {
+        interviewLayout_recruiter.setVisibility(View.VISIBLE);
+        progressBaroffers.setVisibility(View.VISIBLE);
+        noInterview_student.setVisibility(View.GONE);
         firestore.collection("ScheduleInterview").get().addOnSuccessListener(queryDocumentSnapshots -> {
             interviewItemList.clear();
             for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                if(queryDocumentSnapshots.size()>0){
+                    interviewLayout_recruiter.setVisibility(View.VISIBLE);
+
+                }
                 if(documentSnapshot.getString("studentID").equals(getCurrentUserId())) {
                     String interviewId = documentSnapshot.getId();
                     String fromDate = documentSnapshot.getString("fromdate");
@@ -138,6 +188,10 @@ public class TestFragment extends Fragment {
             }
 
         });
+        if(interviewItemList.size() == 0){
+            progressBaroffers.setVisibility(View.GONE);
+            noInterview_student.setVisibility(View.VISIBLE);
+        }
     }
     public void getJobTitle(String jobId, InterviewItem interviewItem, String recruiterId) {
         firestore.collection("Jobs").document(jobId).get().addOnSuccessListener(documentSnapshot -> {
@@ -153,19 +207,28 @@ public class TestFragment extends Fragment {
             String name = documentSnapshot.getString("name");
             interviewItem.setRecruiterName(name);
             interviewItemList.add(interviewItem);
+            interviewLayout_recruiter.setVisibility(View.GONE);
             interviewAdapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> {
             interviewItemList.add(interviewItem);
+            interviewLayout_recruiter.setVisibility(View.GONE);
             interviewAdapter.notifyDataSetChanged();
         });
+
+
+
     }
 
 
 
     public void loadFeedbacks() {
+        feedbackLayout_student.setVisibility(View.VISIBLE);
+        progressBarfeedback.setVisibility(View.VISIBLE);
+        noFeedback_student.setVisibility(View.GONE);
         firestore.collection("Feedback").get().addOnSuccessListener(queryDocumentSnapshots -> {
             feedbackItemList.clear();
             for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+
                 if(documentSnapshot.getString("studentID").equals(getCurrentUserId())){
                 String feedbackId = documentSnapshot.getId();
                 String feedback = documentSnapshot.getString("feedback");
@@ -175,6 +238,10 @@ public class TestFragment extends Fragment {
                 getRecruiterID(recruiterId,jobId,feedbackITem);
             }}
             });
+        if(feedbackItemList.size()==0){
+            progressBarfeedback.setVisibility(View.GONE);
+            noFeedback_student.setVisibility(View.VISIBLE);
+        }
     }
     public void getRecruiterID(String recruiterId, String jobId, FeedbackITem feedbackITem) {
         firestore.collection("Recruiters").document(recruiterId).get().addOnSuccessListener(documentSnapshot -> {
@@ -190,21 +257,26 @@ public class TestFragment extends Fragment {
             String title = documentSnapshot.getString("jobTitle");
             feedbackITem.setJobtitle(title);
             feedbackItemList.add(feedbackITem);
+            feedbackLayout_student.setVisibility(View.GONE);
             feedbackAdapter.notifyDataSetChanged();
         }).addOnFailureListener(e -> {
             feedbackItemList.add(feedbackITem);
+            feedbackLayout_student.setVisibility(View.GONE);
             feedbackAdapter.notifyDataSetChanged();
         });
+
+
+
     }
     private void loadTests() {
+        test_layoutStudent.setVisibility(View.VISIBLE);
+        noTest_student.setVisibility(View.GONE);
+        progressBarTestStudent.setVisibility(View.VISIBLE);
         firestore.collection("test")
                 .whereEqualTo("studentID", getCurrentUserId())
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.isEmpty()) {
-                        test_layoutStudent.setVisibility(View.VISIBLE);
-                        return;
-                    }
+
                     for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
                         String testId = documentSnapshot.getId();
                         String endDate = documentSnapshot.getString("end_date");
@@ -243,10 +315,13 @@ public class TestFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     // Handle failure
                 });
+        if(testItemList.size()==0){
+            progressBarTestStudent.setVisibility(View.GONE);
+            noTest_student.setVisibility(View.VISIBLE);
+        }
     }
 
      boolean isDateTimeBeforeCurrent(String date, String time, boolean after) {
-        // Convert date and time strings to milliseconds
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
         try {
             Date dateTime = sdf.parse(date + " " + time);
@@ -286,12 +361,17 @@ public class TestFragment extends Fragment {
                     String jobTitle = documentSnapshot.getString("jobTitle");
                     testItem.setJobTitle(jobTitle);
                     addItem(testItem);
+                    test_layoutStudent.setVisibility(View.GONE);
                     Log.d("TestFragment_recruiter", "Job title: " + jobTitle);
                 })
                 .addOnFailureListener(e -> {
                     // Handle failure
                     addItem(testItem);
+                    test_layoutStudent.setVisibility(View.GONE);
+
                 });
+
+
 
 
     }

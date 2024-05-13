@@ -12,6 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -50,35 +52,70 @@ public class SheduledInterviewAdapter extends RecyclerView.Adapter<SheduledInter
     @Override
     public void onBindViewHolder(@NonNull TestViewHolder holder, int position) {
         SheduledInterviewItem testItem = interviewlist.get(position);
-        holder.test_viewHolder.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if(testFragment!=null){
-                    FirebaseAuth auth = FirebaseAuth.getInstance();
-                    String uid = auth.getUid();
-                    Intent intent = new Intent(testFragment.getContext(), ConnectingActivity.class);
-                    intent.putExtra("incoming", uid);
-                    intent.putExtra("outgoing", testItem.getOutgoingId());
-                    intent.putExtra("createdBy", testItem.getRecruiterName());
-                    testFragment.startActivity(intent);
-                }
-                if(testFragment_recruiter!=null){
-                    FirebaseAuth auth = FirebaseAuth.getInstance();
-                    String uid = auth.getUid();
-                    Intent intent = new Intent(testFragment_recruiter.getContext(), ConnectingActivity.class);
-                    intent.putExtra("incoming", uid);
-                    intent.putExtra("outgoing", testItem.getOutgoingId());
-                    intent.putExtra("createdBy", testItem.getRecruiterName());
+        holder.test_viewHolder.setOnClickListener(view -> {
 
-                    testFragment_recruiter.startActivity(intent);
+          if(isDateTimeTodayAndAhead(testItem.getStartDate(),testItem.getStartTime())) {
 
-                }
-            }
+              if (testFragment != null) {
+                  FirebaseFirestore db = FirebaseFirestore.getInstance();
+                  FirebaseAuth auth = FirebaseAuth.getInstance();
+                  String uid = auth.getUid();
+                  final boolean[] exist = {false};
+                  db.collection("rooms").get().addOnSuccessListener(queryDocumentSnapshots -> {
+                      for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                          if (documentSnapshot.getString("studentId").equals(uid)) {
+                              Intent intent = new Intent(testFragment.getContext(), ConnectingActivity.class);
+                              intent.putExtra("studentId", uid);
+                              intent.putExtra("studentName", testItem.getRecruiterName());
+                              testFragment.startActivity(intent);
+                              exist[0] = true;
+                          }
+                      }
+                      if (!exist[0]) {
+                          Toast.makeText(holder.test_viewHolder.getContext(), "No Room Created By recruiter", Toast.LENGTH_SHORT).show();
+                      }
+                  });
+
+
+              }
+              if (testFragment_recruiter != null) {
+                  FirebaseAuth auth = FirebaseAuth.getInstance();
+                  String uid = auth.getUid();
+                  Intent intent = new Intent(testFragment_recruiter.getContext(), ConnectingActivity.class);
+                  intent.putExtra("username", testItem.getRecruiterName());
+                  intent.putExtra("recruiterId", uid);
+                  intent.putExtra("studentID", testItem.getOutgoingId());
+
+                  testFragment_recruiter.startActivity(intent);
+
+              }
+          }
+          else {
+              Toast.makeText(holder.test_viewHolder.getContext(), "Interview time not started or day passed", Toast.LENGTH_SHORT).show();
+          }
         });
 
         holder.bind(testItem);
     }
+    boolean isDateTimeTodayAndAhead(String date, String time) {
+        // Convert date and time strings to milliseconds
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+        try {
+            Date dateTime = sdf.parse(date + " " + time);
+            long dateTimeMillis = dateTime.getTime();
+            long currentMillis = System.currentTimeMillis();
+            // Check if date is today and time is ahead of current time
+            return isSameDate(dateTime, new Date(currentMillis)) && dateTimeMillis > currentMillis;
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
+    boolean isSameDate(Date date1, Date date2) {
+        SimpleDateFormat fmt = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        return fmt.format(date1).equals(fmt.format(date2));
+    }
     @Override
     public int getItemCount() {
         return interviewlist.size();
