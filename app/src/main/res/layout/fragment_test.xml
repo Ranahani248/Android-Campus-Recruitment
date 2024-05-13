@@ -29,7 +29,6 @@
             android:id="@+id/testRecycle_student"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/test_viewholder"
             android:layout_marginTop="20dp"
             android:paddingBottom="20dp"
             android:nestedScrollingEnabled="false"/>
@@ -66,21 +65,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:text="Scheduled Interviews"
+            android:text="Interviews' Offers"
             android:layout_marginTop="50dp"
             android:textColor="@color/white"
             android:textSize="24sp"
             android:textStyle="bold"
             />
+
         <androidx.recyclerview.widget.RecyclerView
 
             android:id="@+id/interviewRecycle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:nestedScrollingEnabled="false"
+            android:layout_height="186dp"
             android:layout_marginTop="20dp"
-            />
+            android:layout_weight="1"
+            android:nestedScrollingEnabled="false" />
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/interviewLayout_recruiter"
             android:layout_width="match_parent"
@@ -102,6 +101,108 @@
 
             <ProgressBar
                 android:id="@+id/progressBarSaved"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+        <TextView
+            android:id="@+id/textView9"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:text="Scheduled Interviews"
+            android:layout_marginTop="50dp"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:id="@+id/schduleInterview_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="186dp"
+            android:layout_marginTop="20dp"
+            android:layout_weight="1"
+            android:nestedScrollingEnabled="false" />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/schduleInterview_layout"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="180dp">
+
+            <TextView
+                android:id="@+id/noInterviewschedule_student"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                android:text="No Interviews Scheduled"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                />
+
+
+            <ProgressBar
+                android:id="@+id/progressBarschedule"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
+            android:text="Feedbacks"
+            android:layout_marginTop="50dp"
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            />
+        <androidx.recyclerview.widget.RecyclerView
+
+            android:id="@+id/feedback_recycle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:nestedScrollingEnabled="false"
+            android:layout_marginTop="20dp"
+            />
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/feedbackLayout_student"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:layout_height="180dp">
+
+            <TextView
+                android:id="@+id/noFeedback_student"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:layout_marginTop="20dp"
+                android:visibility="gone"
+                android:text="No feedback"
+                android:textColor="@color/black"
+                android:textSize="17sp"
+                />
+
+
+            <ProgressBar
+                android:id="@+id/progressBarfeedback"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"

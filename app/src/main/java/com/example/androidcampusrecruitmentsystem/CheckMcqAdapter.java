@@ -20,34 +20,27 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AttemptMcqAdapter extends RecyclerView.Adapter<AttemptMcqAdapter.ViewHolder> {
+public class CheckMcqAdapter extends RecyclerView.Adapter<CheckMcqAdapter.ViewHolder> {
     List<AttempMcqItem> mcqItemList;
     RecyclerView recyclerView;
     Context context;
 
-    public AttemptMcqAdapter( RecyclerView recyclerView, Context context, List<AttempMcqItem> mcqItemList) {
+    public CheckMcqAdapter( RecyclerView recyclerView, Context context, List<AttempMcqItem> mcqItemList) {
         this.mcqItemList = mcqItemList;
         this.recyclerView = recyclerView;
         this.context = context;
     }
-public List<AttempMcqItem> getMcqItemList(){
-    return mcqItemList;
-}
+    public List<AttempMcqItem> getMcqItemList(){
+        return mcqItemList;
+    }
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attempt_mcq_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.check_mcq_item, parent, false);
         Log.d("TAG", "onCreateViewHolder: ");
-        return new AttemptMcqAdapter.ViewHolder(view);
+        return new CheckMcqAdapter.ViewHolder(view);
     }
-    boolean checkAll(){
-        for (int i = 0 ; i < mcqItemList.size(); i++){
-            if (mcqItemList.get(i).getAnswer().isEmpty()){
-                return false;
-            }
-        }
-        return true;
-    }
+
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
@@ -63,6 +56,7 @@ public List<AttempMcqItem> getMcqItemList(){
         }
         holder.mcq_option3.setText(mcqItemList.get(position).getOption3());
         holder.mcq_option4.setText(mcqItemList.get(position).getOption4());
+        holder.mcq_answer.setText(mcqItemList.get(position).getAnswer());
         holder.bind(item);
     }
 
@@ -73,34 +67,24 @@ public List<AttempMcqItem> getMcqItemList(){
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView mcq_question,mcq_option1,mcq_option2,mcq_option3,mcq_option4;
-        EditText mcq_answer;
+        TextView mcq_question,mcq_option1,mcq_option2,mcq_option3,mcq_option4,mcq_answer;
         TextView mcq_number;
-        Button mcq_save ;
+
         ImageView EditButton;
         ConstraintLayout constraintLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            mcq_number = itemView.findViewById(R.id.mcq_number);
-            mcq_question = itemView.findViewById(R.id.mcq_question);
-            mcq_option1 = itemView.findViewById(R.id.mcq_option1);
-            mcq_option2 = itemView.findViewById(R.id.mcq_option2);
-            mcq_option3 = itemView.findViewById(R.id.mcq_option3);
-            mcq_option4 = itemView.findViewById(R.id.mcq_option4);
-            mcq_answer = itemView.findViewById(R.id.mcq_answer);
-            mcq_save = itemView.findViewById(R.id.mcq_save);
-            constraintLayout = itemView.findViewById(R.id.detailsLayout);
-            EditButton = itemView.findViewById(R.id.mcq_Edit);
+            mcq_number = itemView.findViewById(R.id.check_mcq_number);
+            mcq_question = itemView.findViewById(R.id.check_mcq_question);
+            mcq_option1 = itemView.findViewById(R.id.check_mcq_option1);
+            mcq_option2 = itemView.findViewById(R.id.check_mcq_option2);
+            mcq_option3 = itemView.findViewById(R.id.check_mcq_option3);
+            mcq_option4 = itemView.findViewById(R.id.check_mcq_option4);
+            mcq_answer = itemView.findViewById(R.id.check_mcq_answer);
+            constraintLayout = itemView.findViewById(R.id.check_detailsLayout);
+            EditButton = itemView.findViewById(R.id.check_mcq_Edit);
 
-            mcq_save.setOnClickListener(view -> {
-               if(mcq_answer.getText().toString().isEmpty()){
-                   mcq_answer.setError("Answer cannot be empty");
-                   mcq_answer.requestFocus();
-                return;
-               }
-                mcqItemList.get(getAdapterPosition()).setAnswer(mcq_answer.getText().toString());
-                constraintLayout.setVisibility(View.GONE);
-            });
+
 
             EditButton.setOnClickListener(v -> {
                 if (constraintLayout.getVisibility() == View.VISIBLE) {

@@ -22,7 +22,7 @@ public class Job_Details_recruiter extends AppCompatActivity {
     ConstraintLayout constraintLayout;
     TextView jobtitle_recruiter, jobCompany_recruiter, joblocation_recruiter, jobsalary_recruiter, jobdescription_recruiter;
     static String jobid, recruiterid;
-    Button deletebtn;
+    Button deletebtn,job_details_recruiter_shortlist;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +37,17 @@ public class Job_Details_recruiter extends AppCompatActivity {
         deletebtn = findViewById(R.id.job_details_recruiter_delete);
         progressBar = findViewById(R.id.recruiterDetailsProgressBar);
         constraintLayout = findViewById(R.id.constraintDetails);
+        job_details_recruiter_shortlist = findViewById(R.id.job_details_recruiter_shortlist);
         firestore = FirebaseFirestore.getInstance();
+
+        job_details_recruiter_shortlist.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(Job_Details_recruiter.this, ShortListed.class);
+                intent.putExtra("jobId", jobid);
+                startActivity(intent);
+            }
+        });
 
         for (JobItem jobItem : Home_recruiter.joblist_recruiter) {
             if (jobItem.getJobid().equals(Job_Details_recruiter.jobid)) {

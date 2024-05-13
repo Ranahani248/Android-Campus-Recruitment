@@ -142,6 +142,20 @@
                 app:layout_constraintTop_toBottomOf="@+id/testSchedule"
                 />
 
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/shortList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Short List"
+                android:textSize="13sp"
+                android:stateListAnimator="@null"
+                android:textColor="#FCFAFA"
+                android:layout_marginHorizontal="110dp"
+                android:background="@drawable/button_bg"
+                app:layout_constraintTop_toBottomOf="@+id/testSchedule"
+                />
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

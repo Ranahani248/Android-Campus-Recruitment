@@ -129,6 +129,7 @@ Button savebtn, applybtn, pendingbtn;
         Application_details.put("studentId", student);
         Application_details.put("jobId", job);
         Application_details.put("applicationDate", formattedDate);
+        Application_details.put("isShortListed", "false");
 
 
         firestore.collection(collection).add(Application_details)

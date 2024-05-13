@@ -15,18 +15,17 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class TestFragment_recruiter extends Fragment {
 
-    private RecyclerView test_recyclerView;
-    private TestListAdapterRecruiter testAdapter;
+    private RecyclerView test_recyclerView,scheduledInterviews_recyclerView;
+    private TestAttemptedAdapterRecruiter testAdapter;
     private List<TestListItemRecruiter> testItemList;
+    private List<SheduledInterviewItem> interviewList;
+    private SheduledInterviewAdapter scheduleInterviewAdapter;
+
     private FirebaseFirestore firestore;
     ConstraintLayout test_layoutRecruiter;
 
@@ -43,16 +42,63 @@ public class TestFragment_recruiter extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_test_recruiter, container, false);
         test_recyclerView = view.findViewById(R.id.testRecycle_recruiter);
-        testAdapter = new TestListAdapterRecruiter(testItemList, test_recyclerView,null);
+        interviewList = new ArrayList<>();
+        scheduledInterviews_recyclerView = view.findViewById(R.id.interviewRecycle);
+
+        scheduleInterviewAdapter = new SheduledInterviewAdapter(interviewList, scheduledInterviews_recyclerView, null, this);
+        scheduledInterviews_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        scheduledInterviews_recyclerView.setAdapter(scheduleInterviewAdapter);
+
+
+        testAdapter = new TestAttemptedAdapterRecruiter(testItemList, test_recyclerView,this);
         test_layoutRecruiter = view.findViewById(R.id.test_layoutRecruiter);
         test_layoutRecruiter.setVisibility(View.GONE);
         test_recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         test_recyclerView.setAdapter(testAdapter);
+        loadScheduledInterviews();
         return view;
     }
 
+    public void loadScheduledInterviews() {
+        firestore.collection("Interviews").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            interviewList.clear();
+            for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
+                if(documentSnapshot.getString("recruiterID").equals(getCurrentUserId())) {
+                    String interviewId = documentSnapshot.getId();
+                    String startDate = documentSnapshot.getString("scheduleDate");
+                    String startTime = documentSnapshot.getString("scheduleTime");
+                    String jobId = documentSnapshot.getString("jobID");
+                    String recruiterID = documentSnapshot.getString("studentID");
+                    SheduledInterviewItem scheduledInterviewItem = new SheduledInterviewItem(startDate, startTime, "Job Title", "Student Name", interviewId, recruiterID);
+                    getScheduleInterviewJob(jobId, scheduledInterviewItem, recruiterID);
+                }
+            }
+        });
+    }
+    public void getScheduleInterviewJob(String jobId, SheduledInterviewItem scheduledInterviewItem, String recruiterID) {
+        firestore.collection("Jobs").document(jobId).get().addOnSuccessListener(documentSnapshot -> {
+            String jobTitle = documentSnapshot.getString("jobTitle");
+            scheduledInterviewItem.setJobtitle(jobTitle);
+            getScheduleInterviewRecruiter(recruiterID, scheduledInterviewItem);
+        }).addOnFailureListener(e -> {
+            getScheduleInterviewRecruiter(recruiterID, scheduledInterviewItem);
+
+        });
+
+    }
+    public void getScheduleInterviewRecruiter(String recruiterID, SheduledInterviewItem scheduledInterviewItem) {
+        firestore.collection("Students").document(recruiterID).get().addOnSuccessListener(documentSnapshot -> {
+            String recruiterName = documentSnapshot.getString("name");
+            scheduledInterviewItem.setRecruiterName(recruiterName);
+            interviewList.add(scheduledInterviewItem);
+            scheduleInterviewAdapter.notifyDataSetChanged();
+        }).addOnFailureListener(e -> {
+            interviewList.add(scheduledInterviewItem);
+            scheduleInterviewAdapter.notifyDataSetChanged();
+        });
+    }
     private void loadTests() {
-        firestore.collection("test")
+        firestore.collection("AttemptedTest")
                 .whereEqualTo("RecruiterId", getCurrentUserId())
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
@@ -61,25 +107,12 @@ public class TestFragment_recruiter extends Fragment {
                         return;
                     }
                     for (DocumentSnapshot documentSnapshot : queryDocumentSnapshots) {
-                        String testId = documentSnapshot.getId();
+                        String attemptedTestId = documentSnapshot.getId();
                         String studentId = documentSnapshot.getString("studentID");
-                        String endDate = documentSnapshot.getString("end_date");
-                        String endTime = documentSnapshot.getString("end_time");
-                        String startDate = documentSnapshot.getString("start_date");
-                        String startTime = documentSnapshot.getString("start_time");
-                        String jobId = documentSnapshot.getString("jobId");
-                        String startDateTime = startDate + " " + startTime;
-                        String endDateTime = endDate + " " + endTime;
 
-                        // Check if end date and time are before current date and time
-                        if (isDateTimeBeforeCurrent(endDate, endTime, true)) {
-                            removeTestFromDatabase(documentSnapshot.getId());
-                            return;
-                        }
-                        // Check if current date and time are before start date and time
-                        else if (isDateTimeBeforeCurrent(startDate, startTime, false)) {
-                        }
-                        TestListItemRecruiter testItem = new TestListItemRecruiter( startDateTime, endDateTime,"studentName", "jobTitle",testId, true);
+                        String jobId = documentSnapshot.getString("jobId");
+
+                        TestListItemRecruiter testItem = new TestListItemRecruiter( "recruiterName", "jobTitle",attemptedTestId);
 
 
                         assert studentId != null;
@@ -99,39 +132,14 @@ public class TestFragment_recruiter extends Fragment {
                 });
     }
 
-    private boolean isDateTimeBeforeCurrent(String date, String time, boolean after) {
-        // Convert date and time strings to milliseconds
-        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-        try {
-            Date dateTime = sdf.parse(date + " " + time);
-            long dateTimeMillis = dateTime.getTime();
-            long currentMillis = System.currentTimeMillis();
-            if( !after) {
-                Log.d("TestFragment_recruiter", "Start time after Current time: " + dateTimeMillis);
-                return dateTimeMillis > currentMillis;
-            }
-            else{
-                Log.d("TestFragment_recruiter", "end time before Current time: " + dateTimeMillis);
-            return dateTimeMillis < currentMillis;}
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
+
     public void addItem(TestListItemRecruiter testItem) {
         testItemList.add(testItem);
         testAdapter.notifyDataSetChanged();
 
     }
 
-    private void removeTestFromDatabase(String testId) {
 
-         firestore.collection("test").document(testId).delete()
-            .addOnSuccessListener(v -> {
-                Log.d("TestFragment_recruiter", "Test removed from database");
-            });
-
-    }
 
     private void retrieveJobName(String jobId, TestListItemRecruiter testItem) {
         Log.d("TestFragment_recruiter", "Job ID: " + jobId);

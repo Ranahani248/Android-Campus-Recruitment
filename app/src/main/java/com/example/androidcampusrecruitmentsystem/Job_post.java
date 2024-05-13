@@ -100,6 +100,7 @@ public class Job_post extends AppCompatActivity {
                     job_details.put("description", description);
                     job_details.put("recruiterId", recruiterId);
 
+
                     firestore.collection("Jobs").add(job_details)
                             .addOnSuccessListener(documentReference -> {
                                 String jobId = documentReference.getId();

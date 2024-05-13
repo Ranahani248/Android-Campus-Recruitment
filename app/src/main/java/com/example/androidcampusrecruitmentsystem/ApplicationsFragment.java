@@ -72,11 +72,12 @@ public class ApplicationsFragment extends Fragment implements ApplicationsAdapte
                         if (task.isSuccessful()) {
                             applicationList.clear(); // Clear existing data
                             for (QueryDocumentSnapshot document : task.getResult()) {
+                                String applicationId = document.getId();
                                 String jobId = document.getString("jobId");
                                 String jobTitle = document.getString("Title");
                                 String studentId = document.getString("studentId");
 
-                                fetchStudentName(studentId, jobTitle, jobId);
+                                fetchStudentName(studentId, jobTitle, jobId,applicationId);
                             }
 
 
@@ -95,14 +96,14 @@ public class ApplicationsFragment extends Fragment implements ApplicationsAdapte
         }
 
     }
-    private void fetchStudentName(String studentId, String jobTitle, String jobid) {
+    private void fetchStudentName(String studentId, String jobTitle, String jobid, String applicationid) {
         firestore.collection("Students").document(studentId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String studentName = documentSnapshot.getString("name");
                         String profilePictureUrl = documentSnapshot.getString("profilePicture");
                         noapp.setVisibility(View.GONE);
-                        applicationList.add(new Application(jobTitle, studentName, profilePictureUrl,studentId,jobid));
+                        applicationList.add(new Application(jobTitle, studentName, profilePictureUrl,studentId,jobid,applicationid));
                         applicationsAdapter.notifyDataSetChanged();
                     }
                     if(applicationList.isEmpty()){
@@ -118,6 +119,7 @@ public class ApplicationsFragment extends Fragment implements ApplicationsAdapte
         ApplicationDetails.studentId = application.getStudentId();
         Intent intent = new Intent(getContext(), ApplicationDetails.class);
         intent.putExtra("jobId", application.getJobid());
+        intent.putExtra("applicationId", application.getApplicationId());
         startActivity(intent);
     }
 }

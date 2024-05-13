@@ -23,8 +23,8 @@ import com.google.firebase.firestore.FirebaseFirestore;
 public class ApplicationDetails extends AppCompatActivity {
 
     TextView studentNameTextView, studentContactTextView;
-    Button downloadCvButton, sendMessageButton, scheduleTestButton,scheduleInterviewButton;
-    static String studentId;
+    Button downloadCvButton, sendMessageButton, scheduleTestButton,scheduleInterviewButton, shortListButton;
+    static String studentId, applicationId;
     ImageView studentImage, imageOpen;
     ProgressBar appDetailsProgress;
     boolean imagePresent = false;
@@ -42,7 +42,8 @@ public class ApplicationDetails extends AppCompatActivity {
         firestore = FirebaseFirestore.getInstance();
         Intent intent = getIntent();
         jobId = intent.getStringExtra("jobId");
-checkIfTestScheduled();
+        applicationId = intent.getStringExtra("applicationId");
+        checkIfTestScheduled();
         // Initialize views
         studentNameTextView = findViewById(R.id.Student_name_application_details);
         studentContactTextView = findViewById(R.id.Student_contact_application_details);
@@ -55,8 +56,32 @@ checkIfTestScheduled();
         scheduleTestButton.setEnabled(false);
         scheduleInterviewButton = findViewById(R.id.interviewSchedule);
         imageOpen = findViewById(R.id.imageOpen);
+        shortListButton = findViewById(R.id.shortList);
+        shortListButton.setEnabled(true);
         load(true);
         retrieveStudentDetails();
+
+
+        shortListButton.setOnClickListener(v -> {
+            if(shortListButton.getText().toString().equals("Short Listed")){
+                firestore.collection("Applications").document(applicationId).update("isShortListed", "false");
+                shortListButton.setText("Short List");
+            }
+            else {
+                firestore.collection("Applications").document(applicationId).update("isShortListed", "true");
+                shortListButton.setText("Short Listed");
+            }
+        });
+        scheduleInterviewButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(ApplicationDetails.this, ScheduleInterview.class);
+                intent.putExtra("studentId", studentId);
+                intent.putExtra("jobId", jobId);
+
+
+                startActivity(intent);            }
+        });
         OnBackPressedCallback callback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
@@ -172,6 +197,15 @@ checkIfTestScheduled();
     }
 
     private void retrieveStudentDetails() {
+        firestore.collection("Applications").document(applicationId).get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String isShortListed = documentSnapshot.getString("isShortListed");
+                        if (isShortListed != null && isShortListed.equals("true")) {
+                            shortListButton.setText("Short Listed");
+                        }
+                    }
+                });
         firestore.collection("Students").document(studentId).get()
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {

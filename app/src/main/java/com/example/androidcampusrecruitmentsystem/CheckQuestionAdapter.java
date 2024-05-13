@@ -20,12 +20,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class AttemptQuestionAdapter extends RecyclerView.Adapter<AttemptQuestionAdapter.ViewHolder> {
+public class CheckQuestionAdapter extends RecyclerView.Adapter<CheckQuestionAdapter.ViewHolder> {
     List<AttemptquestionItem> mcqItemList;
     RecyclerView recyclerView;
     Context context;
 
-    public AttemptQuestionAdapter( RecyclerView recyclerView, Context context, List<AttemptquestionItem> mcqItemList) {
+    public CheckQuestionAdapter( RecyclerView recyclerView, Context context, List<AttemptquestionItem> mcqItemList) {
         this.mcqItemList = mcqItemList;
         this.recyclerView = recyclerView;
         this.context = context;
@@ -37,24 +37,17 @@ public class AttemptQuestionAdapter extends RecyclerView.Adapter<AttemptQuestion
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.attempt_question_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.check_question_item, parent, false);
         Log.d("TAG", "onCreateViewHolder: ");
-        return new AttemptQuestionAdapter.ViewHolder(view);
+        return new CheckQuestionAdapter.ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         AttemptquestionItem item = mcqItemList.get(position);
         holder.question.setText(mcqItemList.get(position).getQuestion());
+        holder.answer.setText(mcqItemList.get(position).getAnswer());
         holder.bind(item);
-    }
-    public boolean checkAll(){
-        for (int i = 0 ; i < mcqItemList.size(); i++){
-            if (mcqItemList.get(i).getAnswer().isEmpty()){
-                return false;
-            }
-        }
-        return true;
     }
     @Override
     public int getItemCount() {
@@ -63,30 +56,20 @@ public class AttemptQuestionAdapter extends RecyclerView.Adapter<AttemptQuestion
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
-        TextView question;
-        EditText answer;
+        TextView question, answer;
         TextView question_number;
-        Button question_save ;
+
         ImageView EditButton;
         ConstraintLayout constraintLayout;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            question_number = itemView.findViewById(R.id.question_number);
-            question = itemView.findViewById(R.id.question);
-            answer = itemView.findViewById(R.id.answer);
-            question_save = itemView.findViewById(R.id.question_save);
-            constraintLayout = itemView.findViewById(R.id.questiondetailsLayout);
-            EditButton = itemView.findViewById(R.id.question_Edit);
+            question_number = itemView.findViewById(R.id.check_question_number);
+            question = itemView.findViewById(R.id.check_question);
+            answer = itemView.findViewById(R.id.check_answer);
+            constraintLayout = itemView.findViewById(R.id.check_questiondetailsLayout);
+            EditButton = itemView.findViewById(R.id.check_question_Edit);
 
-            question_save.setOnClickListener(view -> {
-                if(answer.getText().toString().isEmpty()){
-                    answer.setError("Answer cannot be empty");
-                    answer.requestFocus();
-                    return;
-                }
-                mcqItemList.get(getAdapterPosition()).setAnswer(answer.getText().toString());
-                constraintLayout.setVisibility(View.GONE);
-            });
+
 
             EditButton.setOnClickListener(v -> {
                 if (constraintLayout.getVisibility() == View.VISIBLE) {

@@ -1,13 +1,13 @@
 package com.example.androidcampusrecruitmentsystem;
 
-import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -17,14 +17,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class TestListAdapterRecruiter extends RecyclerView.Adapter<TestListAdapterRecruiter.TestViewHolder> {
+public class TestListAdapterStudent extends RecyclerView.Adapter<TestListAdapterStudent.TestViewHolder> {
 
-    private List<TestListItemRecruiter> testList;
+    private List<TestListItemStudent> testList;
     RecyclerView recyclerView;
      TestFragment testFragment= null;
 
 
-    public TestListAdapterRecruiter(List<TestListItemRecruiter> testList, RecyclerView recyclerView, TestFragment testFragment) {
+    public TestListAdapterStudent(List<TestListItemStudent> testList, RecyclerView recyclerView, TestFragment testFragment) {
         this.testList = testList;
         this.recyclerView = recyclerView;
         if(testFragment!=null){
@@ -41,7 +41,7 @@ public class TestListAdapterRecruiter extends RecyclerView.Adapter<TestListAdapt
 
     @Override
     public void onBindViewHolder(@NonNull TestViewHolder holder, int position) {
-        TestListItemRecruiter testItem = testList.get(position);
+        TestListItemStudent testItem = testList.get(position);
         holder.bind(testItem);
     }
 
@@ -78,7 +78,7 @@ public class TestListAdapterRecruiter extends RecyclerView.Adapter<TestListAdapt
                               testFragment.startActivity(intent);
                            }
                            else {
-                               Log.d("TestViewHolder", "Time Not Started");
+                               Toast.makeText(testFragment.getContext(), "Time not started", Toast.LENGTH_SHORT).show();
                            }
 
                         } catch (ParseException e) {
@@ -91,7 +91,7 @@ public class TestListAdapterRecruiter extends RecyclerView.Adapter<TestListAdapt
 
         }
 
-        public void bind(TestListItemRecruiter testItem) {
+        public void bind(TestListItemStudent testItem) {
             titleTextView.setText(testItem.getJobTitle());
             String date = testItem.getStartDate() + " - " + testItem.getEndDate();
             dateTextView.setText(date);

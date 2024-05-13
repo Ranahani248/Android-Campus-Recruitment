@@ -173,6 +173,20 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/job_details_recruiter_description" />
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/job_details_recruiter_shortlist"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="70dp"
+                android:layout_marginTop="30dp"
+                android:background="@drawable/button_bg"
+                android:text="Short List"
+                android:textColor="@color/black"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/job_details_recruiter_delete" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
